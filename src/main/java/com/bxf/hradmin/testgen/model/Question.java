@@ -24,11 +24,13 @@
 package com.bxf.hradmin.testgen.model;
 
 import javax.persistence.Column;
+import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import com.bxf.hradmin.common.persistence.BooleanToStringConverter;
 import com.bxf.hradmin.common.persistence.IDataObject;
 import com.bxf.hradmin.common.persistence.OidGeneratorListener;
 
@@ -55,6 +57,11 @@ public class Question implements IDataObject {
     @Column(name = "cat_oid", length = 32, nullable = false)
     private String catId;
 
+    /** 是否為單選 */
+    @Column(name = "is_single_answer", columnDefinition = "CHAR", length = 1, nullable = false)
+    @Convert(converter = BooleanToStringConverter.class)
+    private boolean isSingleAnswer;
+
     @Override
     public String getOid() {
         return oid;
@@ -79,6 +86,14 @@ public class Question implements IDataObject {
 
     public void setCatId(String catId) {
         this.catId = catId;
+    }
+
+    public boolean isSingleAnswer() {
+        return isSingleAnswer;
+    }
+
+    public void setSingleAnswer(boolean isSingleAnswer) {
+        this.isSingleAnswer = isSingleAnswer;
     }
 
 }
