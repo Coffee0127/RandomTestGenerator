@@ -27,6 +27,8 @@ import java.util.UUID;
 
 import javax.persistence.PrePersist;
 
+import org.apache.commons.lang3.StringUtils;
+
 /**
  * OidGeneratorListener
  *
@@ -37,8 +39,10 @@ public class OidGeneratorListener {
 
     @PrePersist
     public void perPersist(IDataObject entity) {
-        String uuid = UUID.randomUUID().toString().replace("-", "");
-        entity.setOid(uuid);
+        if (StringUtils.isBlank(entity.getOid())) {
+            String uuid = UUID.randomUUID().toString().replace("-", "");
+            entity.setOid(uuid);
+        }
     }
 
 }
