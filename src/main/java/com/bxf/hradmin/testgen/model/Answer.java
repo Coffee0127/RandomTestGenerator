@@ -56,7 +56,7 @@ public class Answer implements IDataObject {
     /** 是否為正解 */
     @Column(name = "is_correct", columnDefinition = "CHAR", length = 1, nullable = false)
     @Convert(converter = BooleanToStringConverter.class)
-    private Boolean isCorrect;
+    private boolean isCorrect;
 
     /** questionId */
     @Column(name = "question_oid", length = 32, nullable = false)
@@ -80,11 +80,11 @@ public class Answer implements IDataObject {
         this.desc = desc;
     }
 
-    public Boolean getIsCorrect() {
+    public boolean isCorrect() {
         return isCorrect;
     }
 
-    public void setIsCorrect(Boolean isCorrect) {
+    public void setCorrect(boolean isCorrect) {
         this.isCorrect = isCorrect;
     }
 
