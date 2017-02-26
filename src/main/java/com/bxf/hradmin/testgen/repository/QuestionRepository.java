@@ -23,6 +23,8 @@
  */
 package com.bxf.hradmin.testgen.repository;
 
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.bxf.hradmin.testgen.model.Question;
@@ -35,4 +37,12 @@ import com.bxf.hradmin.testgen.model.Question;
  */
 public interface QuestionRepository extends JpaRepository<Question, String> {
 
+    List<Question> findByCatIdIn(List<String> catIds);
+
+    /**
+     * @param catIds 問題類別
+     * @param isSingleAnswer 是否單選
+     * @return
+     */
+    List<Question> findByCatIdInAndIsSingleAnswer(List<String> catIds, boolean isSingleAnswer);
 }
