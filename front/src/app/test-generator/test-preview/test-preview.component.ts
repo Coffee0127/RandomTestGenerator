@@ -1,4 +1,9 @@
 import { Component, OnInit } from '@angular/core';
+import { Http, Headers, RequestOptions, Response } from '@angular/http';
+
+import 'rxjs/Rx';
+
+import { Question } from './../../model/testgen/question.model';
 
 @Component({
   selector: 'app-test-preview',
@@ -7,9 +12,21 @@ import { Component, OnInit } from '@angular/core';
 })
 export class TestPreviewComponent implements OnInit {
 
-  constructor() { }
+  questions: Question[];
+
+  constructor(private http: Http) { }
 
   ngOnInit() {
+    let body = JSON.stringify({
+      catIds: ['F710EF2D72CA4E3391398E6D5EE4DB4E']
+    });
+    let headers = new Headers({ 'Content-Type': 'application/json' });
+    let options = new RequestOptions({ headers: headers });
+    this.http.post('/api/quest/find', body, options)
+      .map((response: Response) => response.json())
+      .subscribe((value: Question[]) => {
+        this.questions = value;
+      });
   }
 
 }
