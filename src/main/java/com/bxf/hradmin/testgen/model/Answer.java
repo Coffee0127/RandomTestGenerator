@@ -27,12 +27,19 @@ import javax.persistence.Column;
 import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import com.bxf.hradmin.common.persistence.BooleanToStringConverter;
 import com.bxf.hradmin.common.persistence.IDataObject;
 import com.bxf.hradmin.common.persistence.OidGeneratorListener;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
  * 問題解答
@@ -58,9 +65,10 @@ public class Answer implements IDataObject {
     @Convert(converter = BooleanToStringConverter.class)
     private boolean isCorrect;
 
-    /** questionId */
-    @Column(name = "question_oid", length = 32, nullable = false)
-    private String questionId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "question_oid")
+    @JsonIgnore
+    private Question question;
 
     @Override
     public String getOid() {
@@ -88,12 +96,22 @@ public class Answer implements IDataObject {
         this.isCorrect = isCorrect;
     }
 
-    public String getQuestionId() {
-        return questionId;
+    public Question getQuestion() {
+        return question;
     }
 
-    public void setQuestionId(String questionId) {
-        this.questionId = questionId;
+    public void setQuestion(Question question) {
+        this.question = question;
+    }
+
+    @Override
+    public int hashCode() {
+        return HashCodeBuilder.reflectionHashCode(this);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return EqualsBuilder.reflectionEquals(this, obj);
     }
 
 }

@@ -23,11 +23,17 @@
  */
 package com.bxf.hradmin.testgen.model;
 
+import java.util.HashSet;
+import java.util.Set;
+
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import com.bxf.hradmin.common.persistence.BooleanToStringConverter;
@@ -61,6 +67,11 @@ public class Question implements IDataObject {
     @Column(name = "is_single_answer", columnDefinition = "CHAR", length = 1, nullable = false)
     @Convert(converter = BooleanToStringConverter.class)
     private boolean isSingleAnswer;
+
+    @OneToMany(cascade = CascadeType.ALL,
+            fetch = FetchType.EAGER,
+            mappedBy = "question")
+    private Set<Answer> answers;
 
     @Override
     public String getOid() {
@@ -96,4 +107,21 @@ public class Question implements IDataObject {
         this.isSingleAnswer = isSingleAnswer;
     }
 
+    public Set<Answer> getAnswers() {
+        return answers;
+    }
+
+    public void setAnswers(Set<Answer> answers) {
+        this.answers = answers;
+    }
+
+    public void addAnswer(Answer answer) {
+        if (this.answers == null) {
+            this.answers = new HashSet<>();
+        }
+        this.answers.add(answer);
+        if (answer.getQuestion() != this) {
+            answer.setQuestion(this);
+        }
+    }
 }
