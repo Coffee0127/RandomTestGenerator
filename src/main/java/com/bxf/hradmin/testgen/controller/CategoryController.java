@@ -23,49 +23,30 @@
  */
 package com.bxf.hradmin.testgen.controller;
 
-import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
-import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.bxf.hradmin.testgen.model.QuestLevel;
-import com.bxf.hradmin.testgen.model.Question;
-import com.bxf.hradmin.testgen.repository.QuestLevelRepository;
-import com.bxf.hradmin.testgen.repository.QuestionRepository;
+import com.bxf.hradmin.testgen.model.Category;
+import com.bxf.hradmin.testgen.repository.CategoryRepository;
 
 /**
- * QuestionController
+ * CategoryController
  *
- * @since 2017-02-26
+ * @since 2017-02-24
  * @author Bo-Xuan Fan
  */
 @RestController
-@RequestMapping("/quest")
-public class QuestionController {
+@RequestMapping("/cate")
+public class CategoryController {
 
     @Autowired
-    private QuestLevelRepository levelRepo;
-
-    @Autowired
-    private QuestionRepository questRepo;
-
-    @RequestMapping("/findQL")
-    public List<QuestLevel> findAllLevels() {
-        return levelRepo.findAll();
-    }
+    private CategoryRepository repo;
 
     @RequestMapping("/find")
-    public List<Question> find(@RequestBody(required = false) Map<String, Object> reqCatIds) {
-        reqCatIds.forEach((k, v) -> {
-            System.out.println(k + ":" + ReflectionToStringBuilder.toString(v, ToStringStyle.MULTI_LINE_STYLE));
-        });
-        List<String> catIds = Arrays.asList("F710EF2D72CA4E3391398E6D5EE4DB4E");
-        return questRepo.findByCatIdIn(catIds);
+    public List<Category> findAllCates() {
+        return repo.findAll();
     }
 }

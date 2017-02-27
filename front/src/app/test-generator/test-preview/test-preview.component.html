@@ -1,6 +1,47 @@
 <div class="row">
   <div class="col-lg-12">
     <div class="panel panel-default">
+      <div class="panel-heading">產製條件</div>
+      <div class="panel-body">
+        <form role="form" class="form-horizontal">
+          <div class="form-group">
+            <label class="col-sm-2 control-label">題目數量</label>
+            <div class="col-sm-2"><input class="form-control" type="number" min="10" max="25" readonly="true" value="25" /></div>
+          </div>
+          <div class="form-group">
+            <label class="col-sm-2 control-label">題目總分</label>
+            <div class="col-sm-2"><input class="form-control" type="number" min="100" max="100" readonly="true" value="100" /></div>
+          </div>
+          <div class="form-group">
+            <label class="col-sm-2 control-label">題目種類</label>
+            <div class="col-sm-10">
+              <div class="checkbox" *ngFor="let cate of categories">
+                <label>
+                  <input type="checkbox" name="cate_checked" [(ngModel)]="cate.checked" value="cate.oid" />{{ cate.desc }}
+                </label>
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-sm-2 control-label" style="padding-top: 12px">難度及數量</label>
+            <div class="col-sm-10">
+              <div class="checkbox" *ngFor="let level of questLevel">
+                <label class="form-inline">
+                  <input class="form-control level-checkbox" type="checkbox" name="cate_checked" />
+                  <span class="form-control-static">{{ level.desc }} <input class="form-control level-amount" type="number" min="1" max="25" value="5" /></span>
+                </label>
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <div class="col-sm-2 control-label">
+              <button type="button" class="btn btn-primary" (click)="generateTest()">產生試卷</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+    <div class="panel panel-default">
       <div class="panel-heading">試卷預覽</div>
       <div class="panel-body">
         <form role="form">
