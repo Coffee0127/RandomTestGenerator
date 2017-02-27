@@ -33,6 +33,8 @@ import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
@@ -67,6 +69,10 @@ public class Question implements IDataObject {
     @Column(name = "is_single_answer", columnDefinition = "CHAR", length = 1, nullable = false)
     @Convert(converter = BooleanToStringConverter.class)
     private boolean isSingleAnswer;
+
+    @ManyToOne
+    @JoinColumn(name = "levelId", columnDefinition = "INTEGER default 1", nullable = false)
+    private QuestLevel questLevel;
 
     @OneToMany(cascade = CascadeType.ALL,
             fetch = FetchType.EAGER,
@@ -105,6 +111,14 @@ public class Question implements IDataObject {
 
     public void setSingleAnswer(boolean isSingleAnswer) {
         this.isSingleAnswer = isSingleAnswer;
+    }
+
+    public QuestLevel getQuestLevel() {
+        return questLevel;
+    }
+
+    public void setQuestLevel(QuestLevel questLevel) {
+        this.questLevel = questLevel;
     }
 
     public Set<Answer> getAnswers() {
