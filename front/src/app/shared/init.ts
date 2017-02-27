@@ -12,4 +12,24 @@ export const init = () => {
   $(window).on('resize', function () {
     if ($(window).width() <= 767) $('#sidebar-collapse').collapse('hide')
   })
+
+  $('.modal').on('shown.bs.modal', function () {
+    if ($('.modal-backdrop').length > 1) {
+      $('.modal-backdrop').not(':first').remove();
+    }
+  }).on('hidden.bs.modal', () => {
+    $('#errMsgModal').find('.alert').not(':first').remove().end()
+      .find('.errMsg').empty();
+  })
+
+  $(document).on('click', '.btn-close-modal', (event) => {
+    if ($('#errMsgModal').find('.alert').length === 1) {
+      $('.modal').modal('hide');
+    } else {
+      let $alert = $(event.target).parents('.alert');
+      $alert.fadeOut(() => {
+        $alert.remove();
+      });
+    }
+  })
 };
