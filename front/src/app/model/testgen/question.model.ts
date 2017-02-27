@@ -2,9 +2,9 @@ import { Answer } from './answer.model';
 import { QuestLevel } from './quest-level.model';
 
 export interface Question {
-  oid?: String
-  desc?: String
-  catId?: String
+  oid?: string
+  desc?: string
+  catId?: string
   singleAnswer?: boolean
   questLevel?: QuestLevel
   answers?: Set<Answer>;

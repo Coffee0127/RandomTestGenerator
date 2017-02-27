@@ -1,5 +1,5 @@
 export interface Answer {
-  oid?: String
-  desc?: String
+  oid?: string
+  desc?: string
   correct?: boolean
 }
