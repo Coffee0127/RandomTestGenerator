@@ -8,10 +8,10 @@
             <label><pre>{{ i + 1 }}. {{ question.desc }}</pre></label>
             <div class="checkbox" *ngFor="let answer of question.answers">
               <label>
-                <input type="checkbox" [checked]="answer.correct" />{{ answer.desc }}
+                <input type="checkbox" [checked]="answer.correct" onclick="return false;" />{{ answer.desc }}
               </label>
             </div>
-            <hr />
+            <hr *ngIf="!last"/>
           </div>
         </form>
       </div>
