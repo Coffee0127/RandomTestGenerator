@@ -1,5 +1,5 @@
 export interface QuestLevel {
-  id?: Number
-  desc?: String
-  correctRate?: Number
+  id?: number
+  desc?: string
+  correctRate?: number
 }

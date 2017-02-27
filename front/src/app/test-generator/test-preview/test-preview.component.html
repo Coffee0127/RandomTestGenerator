@@ -6,7 +6,7 @@
         <form role="form">
           <div class="form-group" *ngFor="let question of questions; let i = index; let last = last;">
             <label><pre>{{ i + 1 }}. {{ question.desc }}</pre></label>
-            <div>({{ question.questLevel.desc }})</div>
+            <div><em>({{ question.questLevel.desc }})</em></div>
             <div class="checkbox" *ngFor="let answer of question.answers">
               <label>
                 <input type="checkbox" [checked]="answer.correct" onclick="return false;" />{{ answer.desc }}
