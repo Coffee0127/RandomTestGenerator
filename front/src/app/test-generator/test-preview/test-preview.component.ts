@@ -1,3 +1,4 @@
+import { showErrorMsg } from './../../shared/showMsg';
 import { Component, OnInit } from '@angular/core';
 import { Http, Headers, RequestOptions, Response } from '@angular/http';
 
@@ -18,7 +19,8 @@ export class TestPreviewComponent implements OnInit {
 
   ngOnInit() {
     let body = JSON.stringify({
-      catIds: ['F710EF2D72CA4E3391398E6D5EE4DB4E']
+      catIds: ['F710EF2D72CA4E3391398E6D5EE4DB4E'],
+      isSingleAnswer: false
     });
     let headers = new Headers({ 'Content-Type': 'application/json' });
     let options = new RequestOptions({ headers: headers });
@@ -26,6 +28,8 @@ export class TestPreviewComponent implements OnInit {
       .map((response: Response) => response.json())
       .subscribe((value: Question[]) => {
         this.questions = value;
+      }, (error: any) => {
+        showErrorMsg(error._body && error._body || 'Server Internal Error');
       });
   }
 
