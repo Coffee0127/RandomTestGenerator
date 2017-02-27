@@ -25,46 +25,36 @@ package com.bxf.hradmin.testgen.model;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.EntityListeners;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-import com.bxf.hradmin.common.persistence.IDataObject;
-import com.bxf.hradmin.common.persistence.OidGeneratorListener;
-
 /**
- * 問題種類
- * <li>Java Building Blocks
- * <li>Operators and Statements
- * <li>Core Java APIs
- * <li>Methods and Encapsulation
- * <li>Class Design
- * <li>Exceptions
+ * QuestLevel
  *
- * @since 2017-02-24
+ * @since 2017-02-27
  * @author Bo-Xuan Fan
  */
 @Entity
-@Table(name = "category")
-@EntityListeners(OidGeneratorListener.class)
-public class Category implements IDataObject {
+@Table(name = "question_level")
+public class QuestLevel {
 
     @Id
-    @Column(length = 32)
-    private String oid;
+    private Integer id;
 
-    /** 問題種類描述 */
+    /** 難易度描述 */
     @Column(name = "description", length = 4000, nullable = false)
     private String desc;
 
-    @Override
-    public String getOid() {
-        return oid;
+    /** 應答對率 */
+    @Column(name = "correct_rate", precision = 1, scale = 2, nullable = false)
+    private Float correctRate;
+
+    public Integer getId() {
+        return id;
     }
 
-    @Override
-    public void setOid(String oid) {
-        this.oid = oid;
+    public void setId(Integer id) {
+        this.id = id;
     }
 
     public String getDesc() {
@@ -73,6 +63,14 @@ public class Category implements IDataObject {
 
     public void setDesc(String desc) {
         this.desc = desc;
+    }
+
+    public Float getCorrectRate() {
+        return correctRate;
+    }
+
+    public void setCorrectRate(Float correctRate) {
+        this.correctRate = correctRate;
     }
 
 }
