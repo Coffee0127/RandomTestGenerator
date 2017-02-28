@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, NgZone } from '@angular/core';
 
 import { init } from './shared/init';
 
@@ -10,7 +10,11 @@ import { init } from './shared/init';
 export class AppComponent implements OnInit {
   title = 'app works!';
 
+  constructor(private zone: NgZone) { }
+
   ngOnInit() {
-    init();
+    this.zone.runOutsideAngular(() => {
+      init();
+    });
   }
 }
