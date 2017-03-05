@@ -14,7 +14,7 @@
             <div class="col-sm-2"><input class="form-control" type="number" min="100" max="100" readonly="true" formControlName="totalScore" /></div>
             <div class="form-control-static" *ngIf="getFieldInvalid('totalScore')">請輸入題目總分</div>
           </div>
-          <div class="form-group" [ngClass]="{'has-error': getFieldInvalid('cate_checked')}">
+          <div class="form-group" [ngClass]="{'has-error': getFieldInvalid('cate_checked')}" *ngIf="condForm.controls['cate_checked']">
             <label class="col-sm-2 control-label">題目種類</label>
             <div class="col-sm-8" formArrayName="cate_checked">
               <div class="checkbox" *ngFor="let cate of condForm.controls['cate_checked'].controls; let i = index">
@@ -26,12 +26,12 @@
               <div class="form-control-static" *ngIf="getFieldInvalid('cate_checked')">請勾選題目種類</div>
             </div>
           </div>
-          <div class="form-group" [ngClass]="{'has-error': getFieldInvalid('questLevelForm')}">
+          <div class="form-group" [ngClass]="{'has-error': getFieldInvalid('questLevelForm')}" *ngIf="condForm.controls['questLevelForm']">
             <label class="col-sm-2 control-label" style="padding-top: 12px">難度及數量</label>
             <div class="col-sm-4" formArrayName="questLevelForm">
               <div class="checkbox" *ngFor="let level of condForm.controls['questLevelForm'].controls; let i = index">
                 <label class="form-inline" [formGroupName]="i">
-                  <input class="form-control level-checkbox" type="checkbox" formControlName="level_checked" />
+                  <input class="level-checkbox" type="checkbox" formControlName="level_checked" />
                   <span class="form-control-static">
                     {{ questLevels[i].desc }}
                     <input class="form-control level-amount" type="number" formControlName="level_number" min="0" max="25" />

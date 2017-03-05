@@ -8,6 +8,8 @@ import { AppComponent } from './app.component';
 import { IndexComponent } from './index/index.component';
 import { TestPreviewComponent } from './test-generator/test-preview/test-preview.component';
 
+import { TestGeneratorService } from './test-generator/test-generator.service';
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -21,7 +23,7 @@ import { TestPreviewComponent } from './test-generator/test-preview/test-preview
     HttpModule,
     AppRoutingModule
   ],
-  providers: [],
+  providers: [TestGeneratorService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
