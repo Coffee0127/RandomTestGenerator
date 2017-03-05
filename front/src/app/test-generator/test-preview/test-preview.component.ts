@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { Validators, FormGroup, FormBuilder, FormArray } from '@angular/forms';
-import { Http, Headers, RequestOptions, Response } from '@angular/http';
 
 import 'rxjs/Rx';
 
@@ -9,6 +8,8 @@ import { DEFAULT_ERROR_MSG } from './../../shared/constant';
 import { Category } from './../../model/testgen/category.model';
 import { Question } from './../../model/testgen/question.model';
 import { QuestLevel } from './../../model/testgen/quest-level.model';
+
+import { TestGeneratorService } from './../test-generator.service';
 
 @Component({
   selector: 'app-test-preview',
@@ -26,24 +27,33 @@ export class TestPreviewComponent implements OnInit {
 
   condForm: FormGroup;
 
-  constructor(private http: Http, private fb: FormBuilder) { }
+  constructor(private testGenerator: TestGeneratorService, private fb: FormBuilder) { }
 
   ngOnInit() {
-    this.http.get('/api/cate/find')
-      .map((response: Response) => response.json())
+    this.testGenerator.findCategories()
       .subscribe((value: Category[]) => {
         this.categories = value.map(cate => {
           cate.checked = true;
           return cate;
         });
+        this.condForm.addControl('cate_checked',
+          this.fb.array(this.categories.map((cate) => {
+            return this.fb.control(cate.checked);
+          }), cateValidator));
       }, (error) => {
         showErrorMsg(error._body && error._body || DEFAULT_ERROR_MSG);
       });
 
-    this.http.get('/api/quest/findQL')
-      .map((response: Response) => response.json())
+    this.testGenerator.findQuestLevels()
       .subscribe((value: QuestLevel[]) => {
         this.questLevels = value;
+        this.condForm.addControl('questLevelForm',
+          this.fb.array(this.questLevels.map((level) => {
+            return this.fb.group({
+              level_checked: !!level.checked,
+              level_number: level.number && level.number || 0
+            });
+          }), levelValidator));
       }, (error) => {
         showErrorMsg(error._body && error._body || DEFAULT_ERROR_MSG);
       });
@@ -60,22 +70,6 @@ export class TestPreviewComponent implements OnInit {
     };
 
     let levelValidator = (formArray: FormArray) => {
-      //
-      /*let totalQuests = formArray.controls.reduce((prevLevelGroup, currLevelGroup) => {
-        let tmpTotalQuests = 0;
-        if (prevLevelGroup.get('level_checked').value) {
-          tmpTotalQuests += prevLevelGroup.get('level_number').value;
-        }
-        if (currLevelGroup.get('level_checked').value) {
-          tmpTotalQuests += currLevelGroup.get('level_number').value;
-        }
-        return this.fb.group({
-          level_checked: true,
-          level_number: tmpTotalQuests
-        });
-      }).get('level_number').value;*/
-
-      // easy way to calcuate total quest :)
       let totalQuests = formArray.controls.filter(level => !!level.get('level_checked').value)
         .reduce((tmpTotalQuests, currLevel) => {
           return tmpTotalQuests + currLevel.get('level_number').value;
@@ -88,16 +82,7 @@ export class TestPreviewComponent implements OnInit {
 
     this.condForm = this.fb.group({
       totalQuests: this.fb.control(TestPreviewComponent.TOTAL_QUESTS, Validators.required),
-      totalScore: this.fb.control(TestPreviewComponent.TOTAL_SCORE, Validators.required),
-      cate_checked: this.fb.array(this.categories.map((cate) => {
-        return this.fb.control(cate.checked);
-      }), cateValidator),
-      questLevelForm: this.fb.array(this.questLevels.map((level) => {
-        return this.fb.group({
-          level_checked: !!level.checked,
-          level_number: level.number && level.number || 0
-        });
-      }), levelValidator)
+      totalScore: this.fb.control(TestPreviewComponent.TOTAL_SCORE, Validators.required)
     });
   }
 
@@ -125,18 +110,11 @@ export class TestPreviewComponent implements OnInit {
         questLevels[index].number = formLevel.level_number;
       }
     });
+    let isSingleAnswer = false;
 
-    let body = JSON.stringify({
-      totalQuests: totalQuests,
-      totalScore: totalScore,
-      catIds: catIds,
-      questLevels: questLevels,
-      isSingleAnswer: false
-    });
-    let headers = new Headers({ 'Content-Type': 'application/json' });
-    let options = new RequestOptions({ headers: headers });
-    this.http.post('/api/quest/generate', body, options)
-      .map((response: Response) => response.json())
+    let cond = { totalQuests, totalScore, catIds, questLevels, isSingleAnswer };
+
+    this.testGenerator.generateTestPreview(cond)
       .subscribe((value: Question[]) => {
         this.questions = value;
       }, (error: any) => {
