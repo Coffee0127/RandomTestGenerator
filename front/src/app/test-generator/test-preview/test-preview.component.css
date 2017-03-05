@@ -1,5 +1,10 @@
 .level-checkbox {
-  margin-top: -1px;
+  margin-top: 10px;
+}
+@media (max-width: 768px) {
+  .level-checkbox {
+    margin-top: 4px;
+  }
 }
 
 .level-amount {
