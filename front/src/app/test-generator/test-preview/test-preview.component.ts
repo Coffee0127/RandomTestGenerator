@@ -82,7 +82,8 @@ export class TestPreviewComponent implements OnInit {
 
     this.condForm = this.fb.group({
       totalQuests: this.fb.control(TestPreviewComponent.TOTAL_QUESTS, Validators.required),
-      totalScore: this.fb.control(TestPreviewComponent.TOTAL_SCORE, Validators.required)
+      totalScore: this.fb.control(TestPreviewComponent.TOTAL_SCORE, Validators.required),
+      answerType: this.fb.control(null)
     });
   }
 
@@ -97,6 +98,7 @@ export class TestPreviewComponent implements OnInit {
     let totalQuests = values['totalQuests'];
     // total score
     let totalScore = values['totalScore'];
+    let isSingleAnswer = values['answerType'];
     // collect Category oid
     let catIds = (<FormArray> this.condForm.get('cate_checked')).controls.map((checkedCate, index) => {
       if (checkedCate.value) {
@@ -106,11 +108,18 @@ export class TestPreviewComponent implements OnInit {
     // collect level
     let questLevels = [...this.questLevels];
     (<Array<any>> values.questLevelForm).map((formLevel, index) => {
+      questLevels[index].checked = formLevel.level_checked;
       if (formLevel.level_checked) {
         questLevels[index].number = formLevel.level_number;
       }
     });
-    let isSingleAnswer = false;
+    questLevels = questLevels
+      .filter(v => v.checked )
+      .map(v => {
+        let id = v.id,
+          number = v.number;
+        return { id, number };
+      });
 
     let cond = { totalQuests, totalScore, catIds, questLevels, isSingleAnswer };
 
