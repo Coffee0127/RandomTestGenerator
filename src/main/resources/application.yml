@@ -19,6 +19,7 @@ spring:
     username: sa
     password: 
   jpa:
+    orm: META-INF/orm/orm-h2.xml
     properties:
       hibernate:
         dialect: org.hibernate.dialect.H2Dialect
@@ -32,6 +33,7 @@ spring:
     username: SCOTT
     password: TIGER
   jpa:
+    orm: META-INF/orm/orm-oracle.xml
     properties:
       hibernate:
         dialect: org.hibernate.dialect.Oracle10gDialect
