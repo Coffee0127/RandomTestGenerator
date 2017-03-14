@@ -23,21 +23,20 @@
  */
 package com.bxf.hradmin.testgen.controller;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.bxf.hradmin.testgen.dto.GenerateCond;
 import com.bxf.hradmin.testgen.model.QuestLevel;
-import com.bxf.hradmin.testgen.model.Question;
+import com.bxf.hradmin.testgen.model.QuestionSnapshot;
 import com.bxf.hradmin.testgen.repository.QuestLevelRepository;
-import com.bxf.hradmin.testgen.repository.QuestionRepository;
+import com.bxf.hradmin.testgen.service.TestGenerator;
 
 /**
  * QuestionController
@@ -53,19 +52,29 @@ public class QuestionController {
     private QuestLevelRepository levelRepo;
 
     @Autowired
-    private QuestionRepository questRepo;
+    private TestGenerator generator;
 
     @RequestMapping("/findQL")
     public List<QuestLevel> findAllLevels() {
         return levelRepo.findAll();
     }
 
-    @RequestMapping("/find")
-    public List<Question> find(@RequestBody(required = false) Map<String, Object> reqCatIds) {
-        reqCatIds.forEach((k, v) -> {
-            System.out.println(k + ":" + ReflectionToStringBuilder.toString(v, ToStringStyle.MULTI_LINE_STYLE));
-        });
-        List<String> catIds = Arrays.asList("F710EF2D72CA4E3391398E6D5EE4DB4E");
-        return questRepo.findByCatIdIn(catIds);
+    @SuppressWarnings("unchecked")
+    @RequestMapping("/generate")
+    public List<QuestionSnapshot> find(@RequestBody(required = false) Map<String, Object> conditions) {
+        GenerateCond cond = new GenerateCond();
+        cond.setTotalQuests((Integer) conditions.get("totalQuests"));
+        cond.setTotalQuests((Integer) conditions.get("totalScore"));
+        cond.setCatIds((List<String>) conditions.get("catIds"));
+        List<QuestLevel> questLevels = ((List<Map<String, Object>>) conditions.get("questLevels"))
+                .stream().map((v) -> {
+                    QuestLevel level = new QuestLevel();
+                    level.setId((Integer) v.get("id"));
+                    level.setNumber((Integer) v.get("number"));
+                    return level;
+                }).collect(Collectors.toList());
+        cond.setQuestLevels(questLevels);
+        cond.setIsSingleAnswer((Boolean) conditions.get("isSingleAnswer"));
+        return generator.generate(cond);
     }
 }

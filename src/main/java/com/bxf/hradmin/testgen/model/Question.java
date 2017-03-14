@@ -68,7 +68,7 @@ public class Question implements IDataObject {
     /** 是否為單選 */
     @Column(name = "is_single_answer", columnDefinition = "CHAR", length = 1, nullable = false)
     @Convert(converter = BooleanToStringConverter.class)
-    private boolean isSingleAnswer;
+    private Boolean isSingleAnswer;
 
     @ManyToOne
     @JoinColumn(name = "levelId", columnDefinition = "INTEGER default 1", nullable = false)
@@ -105,11 +105,11 @@ public class Question implements IDataObject {
         this.catId = catId;
     }
 
-    public boolean isSingleAnswer() {
+    public Boolean getIsSingleAnswer() {
         return isSingleAnswer;
     }
 
-    public void setSingleAnswer(boolean isSingleAnswer) {
+    public void setIsSingleAnswer(Boolean isSingleAnswer) {
         this.isSingleAnswer = isSingleAnswer;
     }
 
