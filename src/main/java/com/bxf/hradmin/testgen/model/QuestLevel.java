@@ -27,6 +27,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 /**
  * QuestLevel
@@ -48,6 +49,10 @@ public class QuestLevel {
     /** 應答對率 */
     @Column(name = "correct_rate", precision = 1, scale = 2, nullable = false)
     private Float correctRate;
+
+    /** 出題數 */
+    @Transient
+    private Integer number;
 
     public Integer getId() {
         return id;
@@ -71,6 +76,14 @@ public class QuestLevel {
 
     public void setCorrectRate(Float correctRate) {
         this.correctRate = correctRate;
+    }
+
+    public Integer getNumber() {
+        return number;
+    }
+
+    public void setNumber(Integer number) {
+        this.number = number;
     }
 
 }
