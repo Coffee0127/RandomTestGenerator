@@ -21,35 +21,44 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.bxf.hradmin.testgen.repository;
+package com.bxf.hradmin.testgen.service;
 
-import java.util.Collection;
-import java.util.List;
-
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.repository.query.Param;
-
-import com.bxf.hradmin.testgen.model.Question;
+import com.bxf.hradmin.common.exception.HRAdminException;
+import com.bxf.hradmin.common.exception.ModuleInfo;
 
 /**
- * QuestionRepository
+ * TestGenException
  *
- * @since 2017-02-25
+ * @since 2017-03-17
  * @author Bo-Xuan Fan
  */
-public interface QuestionRepository extends JpaRepository<Question, String> {
+public class TestGenException extends HRAdminException {
 
-    List<Question> findByOidIn(List<String> oids);
+    /** serialVersionUID */
+    private static final long serialVersionUID = 1276491854189260592L;
 
-    /**
-     * @param catOid 題目類別 Oid
-     * @param isSingleAnswer 僅能傳入 null, 'Y', 'N'
-     * @param levelId 題目難易度 Id
-     * @param rowNums 亂數產生的 row number
-     * @return {@code rowNums} 對應的 Question Oid
-     */
-    List<String> findRandomOids(@Param("catOid") String catOid,
-            @Param("isSingleAnswer") Character isSingleAnswer,
-            @Param("levelId") Integer levelId,
-            @Param("rowNums") Collection<Integer> rowNums);
+    public TestGenException() {
+        super();
+    }
+
+    public TestGenException(String message, Throwable cause, ModuleInfo moduleInfo) {
+        super(message, cause, moduleInfo);
+    }
+
+    public TestGenException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
+    public TestGenException(String message) {
+        super(message);
+    }
+
+    public TestGenException(Throwable cause) {
+        super(cause);
+    }
+
+    public TestGenException(String message, ModuleInfo moduleInfo) {
+        super(message, moduleInfo);
+    }
+
 }
