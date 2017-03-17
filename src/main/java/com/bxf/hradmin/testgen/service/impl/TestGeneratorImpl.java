@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,9 +41,11 @@ import org.springframework.stereotype.Service;
 
 import com.bxf.hradmin.testgen.dto.GenerateCond;
 import com.bxf.hradmin.testgen.model.AnswerSnapshot;
+import com.bxf.hradmin.testgen.model.QuestLevel;
 import com.bxf.hradmin.testgen.model.Question;
 import com.bxf.hradmin.testgen.model.QuestionSnapshot;
 import com.bxf.hradmin.testgen.repository.QuestionRepository;
+import com.bxf.hradmin.testgen.service.TestGenException;
 import com.bxf.hradmin.testgen.service.TestGenerator;
 
 /**
@@ -61,17 +64,49 @@ public class TestGeneratorImpl implements TestGenerator {
 
     @Override
     public List<QuestionSnapshot> generate(GenerateCond cond) {
-        List<QuestionSnapshot> questSnapshots = new ArrayList<>();
         // 幾種題目類別
         int totalCategories = cond.getCatIds().size();
-        cond.getQuestLevels().stream()
+        // 二微陣列：一維-難易度，二維-各題目類別需出題數
+        int[][] categoryQuestionNumbersArray = calcuateQuestionNumbers(cond, totalCategories);
+
+        // 檢查題目數量
+        if (!hasEnoughQuestion(cond.getQuestLevels(), categoryQuestionNumbersArray)) {
+            throw new TestGenException("題目數量不足");
+        }
+
+        // 產生題目
+        return doGenerate(cond, categoryQuestionNumbersArray);
+    }
+
+    private List<QuestionSnapshot> doGenerate(GenerateCond cond, int[][] categoryQuestionNumbersArray) {
+        List<QuestionSnapshot> questSnapshots = new ArrayList<>();
+        for (int i = 0; i < categoryQuestionNumbersArray.length; i++) {
+            QuestLevel questLevel = cond.getQuestLevels().get(i);
+            LOGGER.debug("Generated Quest Level: {}", questLevel.getId());
+            Stream.of(categoryQuestionNumbersArray[i])
+                // 根據該類別題數亂數出題
+                .forEach((categoryQuestionNumbers) -> {
+                    for (int index = 0; index < categoryQuestionNumbers.length; index++) {
+                        String catId = cond.getCatIds().get(index);
+                        int questNumber = categoryQuestionNumbers[index];
+                        LOGGER.debug("\tCategory: {} with {} questions.", catId, questNumber);
+                        List<Question> questions = findQuestions(catId, questNumber, cond.getIsSingleAnswer(), questLevel);
+                        questSnapshots.addAll(transform(questions));
+                    }
+                });
+        }
+        return questSnapshots;
+    }
+
+    private int[][] calcuateQuestionNumbers(GenerateCond cond, int totalCategories) {
+        return cond.getQuestLevels().stream()
             // 計算各類別出題數
             .map((level) -> {
                 // 平均每類別題數
                 int aveQuestNumber = level.getNumber() / totalCategories;
                 int[] categoryQuestionNumber = new int[totalCategories];
-                for (int j = 0; j < categoryQuestionNumber.length; j++) {
-                    categoryQuestionNumber[j] = aveQuestNumber;
+                for (int i = 0; i < categoryQuestionNumber.length; i++) {
+                    categoryQuestionNumber[i] = aveQuestNumber;
                 }
                 // 將剩餘題數亂數填入各類別
                 int mod = level.getNumber() % totalCategories;
@@ -82,83 +117,70 @@ public class TestGeneratorImpl implements TestGenerator {
                 }
                 return categoryQuestionNumber;
             })
-            // 根據該類別題數亂數出題
-            .forEach((categoryQuestionNumbers) -> {
-                for (int index = 0; index < categoryQuestionNumbers.length; index++) {
-                    LOGGER.debug("Category: {} with {} questions.", cond.getCatIds().get(index), categoryQuestionNumbers[index]);
-                    String catId = cond.getCatIds().get(index);
-                    List<Question> questions = doGenerate(catId, categoryQuestionNumbers[index], cond.getIsSingleAnswer());
-                    questSnapshots.addAll(transform(questions));
-                }
-            });
-        return questSnapshots;
+            .toArray(int[][]::new);
     }
 
-    private List<Question> doGenerate(String catId, int questNumber, Boolean isSingleAnswer) {
+    private boolean hasEnoughQuestion(List<QuestLevel> questLevels, int[][] categoryQuestionNumbersArray) {
+        // TODO 產生題數前先檢查題庫是否有足夠數量
+        return true;
+    }
+
+    private List<Question> findQuestions(String catId, int questNumber, Boolean isSingleAnswer, QuestLevel questLevel) {
         Question quest = new Question();
         quest.setCatId(catId);
         quest.setIsSingleAnswer(isSingleAnswer);
-        Example<Question> example = Example.of(quest);
-        // TODO avoid fetch all datas
-        List<Question> rawlist = questRepo.findAll(example);
-        Set<Integer> indexes = getQuestIndexes(questNumber);
-        List<Question> questions = indexes.stream().map((index) -> {
-            return rawlist.get(index);
-        }).collect(Collectors.toList());
-        return questions;
-//        long totalQuestions = questRepo.count(example);
-//        int pageSize = questNumber;
-//        int totalPage = (int) (totalQuestions / pageSize);
-//        if (totalQuestions % pageSize != 0) {
-//            totalPage += 1;
-//        }
-//        int page = new SecureRandom().nextInt(totalPage);
-//        LOGGER.debug("\ttotalQuestions:{}, pageSize:{}, totalPage:{}, page:{}", totalQuestions, pageSize, totalPage, page);
-//        Pageable pageable = new PageRequest(page, pageSize);
-//        return questRepo.findAll(example, pageable).getContent();
-    }
+        quest.setQuestLevel(questLevel);
 
-    private Set<Integer> getQuestIndexes(int questNumber) {
-        Set<Integer> indexes = new HashSet<>();
+        Example<Question> example = Example.of(quest);
+        int totalQuestCounts = (int) questRepo.count(example);
+        Set<Integer> rowNums = new HashSet<>();
         SecureRandom random = new SecureRandom();
-        while (indexes.size() < questNumber) {
-            indexes.add(random.nextInt(questNumber));
+        while (rowNums.size() < questNumber) {
+            int index = random.nextInt(totalQuestCounts);
+            // Database row id is one-based
+            rowNums.add(index + 1);
         }
-        return indexes;
+        Character sqlIsSingleAnswer = null;
+        if (isSingleAnswer != null) {
+            sqlIsSingleAnswer = isSingleAnswer ? 'Y' : 'N';
+        }
+        LOGGER.debug("\ttotalQuestCounts:{}, picked up {}", totalQuestCounts, rowNums);
+        List<String> oids = questRepo.findRandomOids(catId, sqlIsSingleAnswer, questLevel.getId(), rowNums);
+        return questRepo.findByOidIn(oids);
     }
 
     private List<QuestionSnapshot> transform(List<Question> questions) {
         List<QuestionSnapshot> questSnapshots = questions.stream()
-                .map((quest) -> {
-                    QuestionSnapshot snapshot = new QuestionSnapshot();
-                    snapshot.setDesc(quest.getDesc());
-                    List<AnswerSnapshot> answers = quest.getAnswers().stream()
-                            .map(answer -> {
-                                AnswerSnapshot answerSnapshot = new AnswerSnapshot();
-                                answerSnapshot.setDesc(answer.getDesc());
-                                answerSnapshot.setCorrect(answer.isCorrect());
-                                return answerSnapshot;
-                            }).collect(Collectors.toList());
-                    Collections.shuffle(answers, new Random(System.nanoTime()));
-                    for (int i = 0; i < answers.size(); i++) {
-                        answers.get(i).setAnswerNo((char) ('A' + i));
+            .map((quest) -> {
+                QuestionSnapshot snapshot = new QuestionSnapshot();
+                snapshot.setDesc(quest.getDesc());
+                List<AnswerSnapshot> answers = quest.getAnswers().stream()
+                    .map(answer -> {
+                        AnswerSnapshot answerSnapshot = new AnswerSnapshot();
+                        answerSnapshot.setDesc(answer.getDesc());
+                        answerSnapshot.setCorrect(answer.isCorrect());
+                        return answerSnapshot;
+                    }).collect(Collectors.toList());
+                Collections.shuffle(answers, new Random(System.nanoTime()));
+                for (int i = 0; i < answers.size(); i++) {
+                    answers.get(i).setAnswerNo((char) ('A' + i));
+                }
+                snapshot.setAnswers(answers);
+                return snapshot;
+            })
+            .map((quest) -> {
+                StringBuilder correctAnswer = new StringBuilder();
+                quest.getAnswers().forEach((answer) -> {
+                    if (answer.isCorrect()) {
+                        correctAnswer.append(answer.getAnswerNo()).append(',');
                     }
-                    snapshot.setAnswers(answers);
-                    return snapshot;
-                })
-                .map((quest) -> {
-                    StringBuilder correctAnswer = new StringBuilder();
-                    quest.getAnswers().forEach((answer) -> {
-                        if (answer.isCorrect()) {
-                            correctAnswer.append(answer.getAnswerNo()).append(',');
-                        }
-                    });
-                    // trim the last ','
-                    correctAnswer.setLength(correctAnswer.length() - 1);
-                    quest.setCorrectAnswer(correctAnswer.toString());
-                    return quest;
-                })
-                .collect(Collectors.toList());
+                });
+                // trim the last ','
+                correctAnswer.setLength(correctAnswer.length() - 1);
+                quest.setCorrectAnswer(correctAnswer.toString());
+                return quest;
+            })
+            .collect(Collectors.toList());
         Collections.shuffle(questSnapshots, new Random(System.nanoTime()));
         return questSnapshots;
     }
