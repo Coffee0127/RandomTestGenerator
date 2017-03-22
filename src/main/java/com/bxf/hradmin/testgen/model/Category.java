@@ -32,6 +32,8 @@ import javax.persistence.Table;
 import com.bxf.hradmin.common.persistence.IDataObject;
 import com.bxf.hradmin.common.persistence.OidGeneratorListener;
 
+import lombok.Data;
+
 /**
  * 問題種類
  * <li>Java Building Blocks
@@ -47,6 +49,7 @@ import com.bxf.hradmin.common.persistence.OidGeneratorListener;
 @Entity
 @Table(name = "category")
 @EntityListeners(OidGeneratorListener.class)
+@Data
 public class Category implements IDataObject {
 
     @Id
@@ -56,23 +59,5 @@ public class Category implements IDataObject {
     /** 問題種類描述 */
     @Column(name = "description", length = 4000, nullable = false)
     private String desc;
-
-    @Override
-    public String getOid() {
-        return oid;
-    }
-
-    @Override
-    public void setOid(String oid) {
-        this.oid = oid;
-    }
-
-    public String getDesc() {
-        return desc;
-    }
-
-    public void setDesc(String desc) {
-        this.desc = desc;
-    }
 
 }

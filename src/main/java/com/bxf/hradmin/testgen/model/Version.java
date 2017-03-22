@@ -34,6 +34,8 @@ import javax.persistence.Table;
 import com.bxf.hradmin.common.persistence.IDataObject;
 import com.bxf.hradmin.common.persistence.OidGeneratorListener;
 
+import lombok.Data;
+
 /**
  * 測驗考卷版本
  *
@@ -43,6 +45,7 @@ import com.bxf.hradmin.common.persistence.OidGeneratorListener;
 @Entity
 @Table(name = "version")
 @EntityListeners(OidGeneratorListener.class)
+@Data
 public class Version implements IDataObject {
 
     @Id
@@ -56,31 +59,5 @@ public class Version implements IDataObject {
     /** 建立者 */
     @Column(name = "creator", length = 200, nullable = false)
     private String creator;
-
-    @Override
-    public String getOid() {
-        return oid;
-    }
-
-    @Override
-    public void setOid(String oid) {
-        this.oid = oid;
-    }
-
-    public Date getCreateDatetime() {
-        return createDatetime;
-    }
-
-    public void setCreateDatetime(Date createDatetime) {
-        this.createDatetime = createDatetime;
-    }
-
-    public String getCreator() {
-        return creator;
-    }
-
-    public void setCreator(String creator) {
-        this.creator = creator;
-    }
 
 }
