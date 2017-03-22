@@ -28,9 +28,12 @@ import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import com.bxf.hradmin.common.persistence.IDataObject;
 import com.bxf.hradmin.common.persistence.OidGeneratorListener;
+
+import lombok.Data;
 
 /**
  * 答案快照
@@ -41,6 +44,7 @@ import com.bxf.hradmin.common.persistence.OidGeneratorListener;
 @Entity
 @Table(name = "answer_snapshot")
 @EntityListeners(OidGeneratorListener.class)
+@Data
 public class AnswerSnapshot implements IDataObject {
 
     @Id
@@ -59,38 +63,7 @@ public class AnswerSnapshot implements IDataObject {
     @Column(name = "description", length = 4000, nullable = false)
     private String desc;
 
-    @Override
-    public String getOid() {
-        return oid;
-    }
-
-    @Override
-    public void setOid(String oid) {
-        this.oid = oid;
-    }
-
-    public String getQuestionId() {
-        return questionId;
-    }
-
-    public void setQuestionId(String questionId) {
-        this.questionId = questionId;
-    }
-
-    public char getAnswerNo() {
-        return answerNo;
-    }
-
-    public void setAnswerNo(char answerNo) {
-        this.answerNo = answerNo;
-    }
-
-    public String getDesc() {
-        return desc;
-    }
-
-    public void setDesc(String desc) {
-        this.desc = desc;
-    }
+    @Transient
+    private boolean isCorrect;
 
 }
