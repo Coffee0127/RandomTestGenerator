@@ -29,6 +29,8 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import lombok.Data;
+
 /**
  * QuestLevel
  *
@@ -37,6 +39,7 @@ import javax.persistence.Transient;
  */
 @Entity
 @Table(name = "question_level")
+@Data
 public class QuestLevel {
 
     @Id
@@ -53,37 +56,5 @@ public class QuestLevel {
     /** 出題數 */
     @Transient
     private Integer number;
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public String getDesc() {
-        return desc;
-    }
-
-    public void setDesc(String desc) {
-        this.desc = desc;
-    }
-
-    public Float getCorrectRate() {
-        return correctRate;
-    }
-
-    public void setCorrectRate(Float correctRate) {
-        this.correctRate = correctRate;
-    }
-
-    public Integer getNumber() {
-        return number;
-    }
-
-    public void setNumber(Integer number) {
-        this.number = number;
-    }
 
 }

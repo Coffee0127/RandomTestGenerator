@@ -23,14 +23,19 @@
  */
 package com.bxf.hradmin.testgen.model;
 
+import java.util.List;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import com.bxf.hradmin.common.persistence.IDataObject;
 import com.bxf.hradmin.common.persistence.OidGeneratorListener;
+
+import lombok.Data;
 
 /**
  * QuestionSnapshot
@@ -41,6 +46,7 @@ import com.bxf.hradmin.common.persistence.OidGeneratorListener;
 @Entity
 @Table(name = "question_snapshot")
 @EntityListeners(OidGeneratorListener.class)
+@Data
 public class QuestionSnapshot implements IDataObject {
 
     @Id
@@ -63,46 +69,7 @@ public class QuestionSnapshot implements IDataObject {
     @Column(name = "correct_answer", length = 10, nullable = false)
     private String correctAnswer;
 
-    @Override
-    public String getOid() {
-        return oid;
-    }
-
-    @Override
-    public void setOid(String oid) {
-        this.oid = oid;
-    }
-
-    public String getVersionOid() {
-        return versionOid;
-    }
-
-    public void setVersionOid(String versionOid) {
-        this.versionOid = versionOid;
-    }
-
-    public Integer getQuestionNo() {
-        return questionNo;
-    }
-
-    public void setQuestionNo(Integer questionNo) {
-        this.questionNo = questionNo;
-    }
-
-    public String getDesc() {
-        return desc;
-    }
-
-    public void setDesc(String desc) {
-        this.desc = desc;
-    }
-
-    public String getCorrectAnswer() {
-        return correctAnswer;
-    }
-
-    public void setCorrectAnswer(String correctAnswer) {
-        this.correctAnswer = correctAnswer;
-    }
+    @Transient
+    List<AnswerSnapshot> answers;
 
 }

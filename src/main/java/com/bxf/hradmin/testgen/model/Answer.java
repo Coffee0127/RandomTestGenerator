@@ -41,6 +41,8 @@ import com.bxf.hradmin.common.persistence.IDataObject;
 import com.bxf.hradmin.common.persistence.OidGeneratorListener;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import lombok.Data;
+
 /**
  * 問題解答
  *
@@ -50,6 +52,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 @Entity
 @Table(name = "answer")
 @EntityListeners(OidGeneratorListener.class)
+@Data
 public class Answer implements IDataObject {
 
     @Id
@@ -71,40 +74,6 @@ public class Answer implements IDataObject {
     private Question question;
 
     @Override
-    public String getOid() {
-        return oid;
-    }
-
-    @Override
-    public void setOid(String oid) {
-        this.oid = oid;
-    }
-
-    public String getDesc() {
-        return desc;
-    }
-
-    public void setDesc(String desc) {
-        this.desc = desc;
-    }
-
-    public boolean isCorrect() {
-        return isCorrect;
-    }
-
-    public void setCorrect(boolean isCorrect) {
-        this.isCorrect = isCorrect;
-    }
-
-    public Question getQuestion() {
-        return question;
-    }
-
-    public void setQuestion(Question question) {
-        this.question = question;
-    }
-
-    @Override
     public int hashCode() {
         return HashCodeBuilder.reflectionHashCode(this);
     }
@@ -113,5 +82,4 @@ public class Answer implements IDataObject {
     public boolean equals(Object obj) {
         return EqualsBuilder.reflectionEquals(this, obj);
     }
-
 }
