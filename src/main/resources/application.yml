@@ -6,6 +6,11 @@ spring:
       ddl-auto: update
       naming:
         physical-strategy: com.bxf.hradmin.common.persistence.MyNamingStrategy
+  http:
+    encoding:
+      enabled: true
+      charset: UTF-8
+      force: true
 
 server:
   context-path: /HRAdmin
