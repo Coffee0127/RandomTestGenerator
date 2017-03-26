@@ -21,19 +21,35 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.bxf.hradmin.testgen.service;
-
-import java.util.List;
-
-import com.bxf.hradmin.testgen.model.QuestionSnapshot;
+package com.bxf.hradmin.testgen.dto;
 
 /**
- * 試卷產生器
+ * QuestionFile
  *
- * @since 2017-02-26
+ * @since 2017-03-18
  * @author Bo-Xuan Fan
  */
-public interface TestGenerator {
+public class QuestionFile {
 
-    void generate(String fileName, List<QuestionSnapshot> questions);
+    /** 檔案名稱 */
+    private String name;
+
+    /** 檔案內容 */
+    private byte[] content;
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public byte[] getContent() {
+        return content;
+    }
+
+    public void setContent(byte[] content) {
+        this.content = content;
+    }
 }

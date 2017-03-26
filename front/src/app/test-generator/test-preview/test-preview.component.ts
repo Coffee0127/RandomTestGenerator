@@ -1,20 +1,33 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, trigger, state, style, transition, animate } from '@angular/core';
 import { Validators, FormGroup, FormBuilder, FormArray } from '@angular/forms';
 
 import 'rxjs/Rx';
+import { Observable } from 'rxjs/Observable';
 
 import { showErrorMsg } from './../../shared/showMsg';
 import { DEFAULT_ERROR_MSG } from './../../shared/constant';
 import { Category } from './../../model/testgen/category.model';
 import { Question } from './../../model/testgen/question.model';
 import { QuestLevel } from './../../model/testgen/quest-level.model';
+import { Version } from './../../model/testgen/version.model';
 
 import { TestGeneratorService } from './../test-generator.service';
 
 @Component({
   selector: 'app-test-preview',
   templateUrl: './test-preview.component.html',
-  styleUrls: ['./test-preview.component.css']
+  styleUrls: ['./test-preview.component.css'],
+  animations: [
+    trigger('btnAnimation', [
+      transition(':enter', [
+        style({ opacity: 0 }),
+        animate(500, style({ opacity: 1 }))
+      ]),
+      transition(':leave', [
+        style({ opacity: 0 }),
+      ])
+    ])
+  ]
 })
 export class TestPreviewComponent implements OnInit {
 
@@ -22,41 +35,41 @@ export class TestPreviewComponent implements OnInit {
   public static readonly TOTAL_SCORE = 100;
 
   categories: Category[];
-  questions: Question[];
+  version: Version;
   questLevels: QuestLevel[];
 
   condForm: FormGroup;
 
+  // 是否可以下載
+  isDownloadAvailable = false;
+
   constructor(private testGenerator: TestGeneratorService, private fb: FormBuilder) { }
 
   ngOnInit() {
-    this.testGenerator.findCategories()
-      .subscribe((value: Category[]) => {
-        this.categories = value.map(cate => {
-          cate.checked = true;
-          return cate;
-        });
-        this.condForm.addControl('cate_checked',
-          this.fb.array(this.categories.map((cate) => {
-            return this.fb.control(cate.checked);
-          }), cateValidator));
-      }, (error) => {
-        showErrorMsg(error._body && error._body || DEFAULT_ERROR_MSG);
+    let ob$ = Observable.forkJoin(
+      this.testGenerator.findCategories(),
+      this.testGenerator.findQuestLevels());
+    ob$.subscribe(values => {
+      this.categories = values[0].map(cate => {
+        cate.checked = true;
+        return cate;
       });
+      this.condForm.addControl('cate_checked',
+        this.fb.array(this.categories.map((cate) => {
+          return this.fb.control(cate.checked);
+        }), cateValidator));
 
-    this.testGenerator.findQuestLevels()
-      .subscribe((value: QuestLevel[]) => {
-        this.questLevels = value;
-        this.condForm.addControl('questLevelForm',
-          this.fb.array(this.questLevels.map((level) => {
-            return this.fb.group({
-              level_checked: !!level.checked,
-              level_number: level.number && level.number || 0
-            });
-          }), levelValidator));
-      }, (error) => {
-        showErrorMsg(error._body && error._body || DEFAULT_ERROR_MSG);
-      });
+      this.questLevels = values[1];
+      this.condForm.addControl('questLevelForm',
+        this.fb.array(this.questLevels.map((level) => {
+          return this.fb.group({
+            level_checked: !!level.checked,
+            level_number: level.number && level.number || 0
+          });
+        }), levelValidator));
+    }, (error) => {
+      showErrorMsg(error._body && error._body || DEFAULT_ERROR_MSG);
+    });
 
     let cateValidator = (formArray: FormArray) => {
       let isCateChecked = false;
@@ -92,7 +105,7 @@ export class TestPreviewComponent implements OnInit {
     return field && field.dirty && field.invalid;
   }
 
-  generateTest() {
+  previewTest() {
     let values = this.condForm.value;
     // total questions
     let totalQuests = values['totalQuests'];
@@ -123,12 +136,23 @@ export class TestPreviewComponent implements OnInit {
 
     let cond = { totalQuests, totalScore, catIds, questLevels, isSingleAnswer };
 
+    this.isDownloadAvailable = false;
+    this.version = undefined;
     this.testGenerator.generateTestPreview(cond)
-      .subscribe((value: Question[]) => {
-        this.questions = value;
+      .subscribe((value: Version) => {
+        this.version = value;
       }, (error: any) => {
         showErrorMsg(error._body && error._body || DEFAULT_ERROR_MSG);
       });
   }
 
+  generateTest() {
+    this.testGenerator.generate(this.version)
+      .subscribe((value) => {
+        this.isDownloadAvailable = true;
+        this.version.oid = value;
+      }, (error: any) => {
+        showErrorMsg(error._body && error._body || DEFAULT_ERROR_MSG);
+      });
+  }
 }

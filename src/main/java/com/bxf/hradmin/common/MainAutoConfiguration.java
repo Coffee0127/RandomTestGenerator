@@ -21,19 +21,29 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.bxf.hradmin.testgen.service;
+package com.bxf.hradmin.common;
 
-import java.util.List;
-
-import com.bxf.hradmin.testgen.model.QuestionSnapshot;
+import org.springframework.beans.factory.config.YamlPropertiesFactoryBean;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
+import org.springframework.core.io.ClassPathResource;
 
 /**
- * 試卷產生器
+ * MainAutoConfiguration
  *
- * @since 2017-02-26
+ * @since 2017-03-12
  * @author Bo-Xuan Fan
  */
-public interface TestGenerator {
+@Configuration
+public class MainAutoConfiguration {
 
-    void generate(String fileName, List<QuestionSnapshot> questions);
+    @Bean
+    public static PropertySourcesPlaceholderConfigurer properties() {
+        PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer = new PropertySourcesPlaceholderConfigurer();
+        YamlPropertiesFactoryBean yaml = new YamlPropertiesFactoryBean();
+        yaml.setResources(new ClassPathResource("META-INF/config/test-generator.yml"));
+        propertySourcesPlaceholderConfigurer.setProperties(yaml.getObject());
+        return propertySourcesPlaceholderConfigurer;
+    }
 }

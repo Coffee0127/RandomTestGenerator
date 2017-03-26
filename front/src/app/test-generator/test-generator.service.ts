@@ -26,7 +26,15 @@ export class TestGeneratorService {
     });
     let headers = new Headers({ 'Content-Type': 'application/json' });
     let options = new RequestOptions({ headers: headers });
-    return this.http.post('/api/quest/generate', body, options)
+    return this.http.post('/api/quest/preview', body, options)
       .map((response: Response) => response.json());
+  }
+
+  generate(version) {
+    let body = JSON.stringify(version);
+    let headers = new Headers({ 'Content-Type': 'application/json' });
+    let options = new RequestOptions({ headers: headers });
+    return this.http.post('/api/quest/generate', body, options)
+      .map((response: Response) => response.text());
   }
 }

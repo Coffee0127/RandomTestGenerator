@@ -23,9 +23,9 @@
  */
 package com.bxf.hradmin.testgen.controller;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -34,9 +34,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.bxf.hradmin.testgen.dto.GenerateCond;
 import com.bxf.hradmin.testgen.model.QuestLevel;
-import com.bxf.hradmin.testgen.model.QuestionSnapshot;
+import com.bxf.hradmin.testgen.model.Version;
 import com.bxf.hradmin.testgen.repository.QuestLevelRepository;
-import com.bxf.hradmin.testgen.service.TestGenerator;
+import com.bxf.hradmin.testgen.service.TestGenException;
+import com.bxf.hradmin.testgen.service.TestGenerationService;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * QuestionController
@@ -52,29 +55,66 @@ public class QuestionController {
     private QuestLevelRepository levelRepo;
 
     @Autowired
-    private TestGenerator generator;
+    private TestGenerationService testGenService;
 
     @RequestMapping("/findQL")
     public List<QuestLevel> findAllLevels() {
         return levelRepo.findAll();
     }
 
-    @SuppressWarnings("unchecked")
-    @RequestMapping("/generate")
-    public List<QuestionSnapshot> find(@RequestBody(required = false) Map<String, Object> conditions) {
-        GenerateCond cond = new GenerateCond();
-        cond.setTotalQuests((Integer) conditions.get("totalQuests"));
-        cond.setTotalQuests((Integer) conditions.get("totalScore"));
-        cond.setCatIds((List<String>) conditions.get("catIds"));
-        List<QuestLevel> questLevels = ((List<Map<String, Object>>) conditions.get("questLevels"))
-                .stream().map((v) -> {
-                    QuestLevel level = new QuestLevel();
-                    level.setId((Integer) v.get("id"));
-                    level.setNumber((Integer) v.get("number"));
-                    return level;
-                }).collect(Collectors.toList());
-        cond.setQuestLevels(questLevels);
-        cond.setIsSingleAnswer((Boolean) conditions.get("isSingleAnswer"));
-        return generator.generate(cond);
+    @RequestMapping("/preview")
+    public Version preview(@RequestBody Map<String, Object> parameter) {
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            GenerateCond cond = mapper.readValue(mapper.writeValueAsString(parameter),
+                    new TypeReference<GenerateCond>() { });
+            return testGenService.preview(cond);
+        } catch (IOException e) {
+            throw new TestGenException(e);
+        }
     }
+
+    @RequestMapping("/generate")
+    public String generate(@RequestBody Map<String, Object> parameter) {
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            Version questions = mapper.readValue(mapper.writeValueAsString(parameter),
+                    new TypeReference<Version>() { });
+            return testGenService.generate(questions).getOid();
+        } catch (IOException e) {
+            throw new TestGenException(e);
+        }
+
+    }
+
+//    @RequestMapping("/download")
+//    public void download(@RequestBody(required = false) Map<String, Object> parameter, HttpServletResponse response) throws IOException {
+////        response.setContentType("application/pdf");
+//
+////        List<QuestionSnapshot> questions = new ArrayList<>();
+//        ObjectInputStream ois = new ObjectInputStream(new FileInputStream(new File("D:/Temp/question.file")));
+//        List<QuestionSnapshot> questions = null;
+//        try {
+//            questions = (List<QuestionSnapshot>) ois.readObject();
+//        } catch (ClassNotFoundException e) {
+//            // TODO Auto-generated catch block
+//            e.printStackTrace();
+//        }
+//        ois.close();
+//        for (int i = 0; i < questions.size(); i++) {
+//            QuestionSnapshot question = questions.get(i);
+//            question.setQuestionNo(i + 1);
+//            question.setDesc("來點中文" + question.getDesc());
+//        }
+//
+//        String contentType = "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+//        QuestionFile questionFile = testGenService.download(questions, contentType);
+//        response.setContentType(contentType);
+//        String contentDisposition = new StringBuilder()
+//                .append("attachment; filename=\"").append(questionFile.getName()).append('"').toString();
+//        response.setHeader("Content-Disposition", contentDisposition);
+//        InputStream input = new ByteArrayInputStream(questionFile.getContent());
+//        IOUtils.copy(input, response.getOutputStream());
+//        response.flushBuffer();
+//    }
 }

@@ -25,15 +25,20 @@ package com.bxf.hradmin.testgen.model;
 
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 
 import com.bxf.hradmin.common.persistence.IDataObject;
 import com.bxf.hradmin.common.persistence.OidGeneratorListener;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.Data;
 
@@ -54,8 +59,10 @@ public class QuestionSnapshot implements IDataObject {
     private String oid;
 
     /** 問卷版本 */
-    @Column(name = "version_oid", length = 32, nullable = false)
-    private String versionOid;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "version_oid", nullable = false)
+    @JsonIgnore
+    private Version version;
 
     /** 問題編號 */
     @Column(name = "question_no", nullable = false)
@@ -69,7 +76,9 @@ public class QuestionSnapshot implements IDataObject {
     @Column(name = "correct_answer", length = 10, nullable = false)
     private String correctAnswer;
 
-    @Transient
-    List<AnswerSnapshot> answers;
+    @OneToMany(cascade = CascadeType.ALL,
+            fetch = FetchType.EAGER,
+            mappedBy = "question")
+    private List<AnswerSnapshot> answers;
 
 }
