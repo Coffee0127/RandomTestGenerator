@@ -26,10 +26,12 @@ package com.bxf.hradmin.testgen.service.impl;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -40,30 +42,42 @@ import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Service;
 
 import com.bxf.hradmin.testgen.dto.GenerateCond;
+import com.bxf.hradmin.testgen.dto.QuestionFile;
 import com.bxf.hradmin.testgen.model.AnswerSnapshot;
 import com.bxf.hradmin.testgen.model.QuestLevel;
 import com.bxf.hradmin.testgen.model.Question;
 import com.bxf.hradmin.testgen.model.QuestionSnapshot;
+import com.bxf.hradmin.testgen.model.Version;
+import com.bxf.hradmin.testgen.repository.QuestLevelRepository;
 import com.bxf.hradmin.testgen.repository.QuestionRepository;
+import com.bxf.hradmin.testgen.repository.VersionRepository;
 import com.bxf.hradmin.testgen.service.TestGenException;
+import com.bxf.hradmin.testgen.service.TestGenerationService;
 import com.bxf.hradmin.testgen.service.TestGenerator;
+import com.bxf.hradmin.utils.BeanUtils;
 
 /**
- * TestGeneratorImpl
+ * TestGenerationServiceImpl
  *
- * @since 2017-02-26
+ * @since 2017-03-18
  * @author Bo-Xuan Fan
  */
 @Service
-public class TestGeneratorImpl implements TestGenerator {
+public class TestGenerationServiceImpl implements TestGenerationService {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(TestGeneratorImpl.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(TestGenerationServiceImpl.class);
 
     @Autowired
     private QuestionRepository questRepo;
 
+    @Autowired
+    private QuestLevelRepository levelRepo;
+
+    @Autowired
+    private VersionRepository versionRepo;
+
     @Override
-    public List<QuestionSnapshot> generate(GenerateCond cond) {
+    public Version preview(GenerateCond cond) {
         // 幾種題目類別
         int totalCategories = cond.getCatIds().size();
         // 二微陣列：一維-難易度，二維-各題目類別需出題數
@@ -75,10 +89,11 @@ public class TestGeneratorImpl implements TestGenerator {
         }
 
         // 產生題目
-        return doGenerate(cond, categoryQuestionNumbersArray);
+        return doPreview(cond, categoryQuestionNumbersArray);
     }
 
-    private List<QuestionSnapshot> doGenerate(GenerateCond cond, int[][] categoryQuestionNumbersArray) {
+    private Version doPreview(GenerateCond cond, int[][] categoryQuestionNumbersArray) {
+        Version version = new Version();
         List<QuestionSnapshot> questSnapshots = new ArrayList<>();
         for (int i = 0; i < categoryQuestionNumbersArray.length; i++) {
             QuestLevel questLevel = cond.getQuestLevels().get(i);
@@ -95,7 +110,24 @@ public class TestGeneratorImpl implements TestGenerator {
                     }
                 });
         }
-        return questSnapshots;
+
+        // 設置題號
+        for (int i = 0; i < questSnapshots.size(); i++) {
+            questSnapshots.get(i).setQuestionNo(i + 1);
+        }
+
+        int eachQuestionScore = cond.getTotalScore() / cond.getTotalQuests();
+        // 計算建議及格分數
+        double passingScore = cond.getQuestLevels().stream()
+            .mapToDouble(level -> eachQuestionScore * level.getNumber() * levelRepo.findOne(level.getId()).getCorrectRate())
+            .reduce((prev, next) -> prev + next).getAsDouble();
+        if (passingScore % eachQuestionScore != 0) {
+            passingScore = (((int) (passingScore / eachQuestionScore)) + 1) * eachQuestionScore;
+        }
+        version.setPassingScore((int) passingScore);
+        version.setQuestions(questSnapshots);
+
+        return version;
     }
 
     private int[][] calcuateQuestionNumbers(GenerateCond cond, int totalCategories) {
@@ -121,7 +153,7 @@ public class TestGeneratorImpl implements TestGenerator {
     }
 
     private boolean hasEnoughQuestion(List<QuestLevel> questLevels, int[][] categoryQuestionNumbersArray) {
-        // TODO 產生題數前先檢查題庫是否有足夠數量
+        // TODO 產生題目前先檢查題庫是否有足夠數量
         return true;
     }
 
@@ -185,4 +217,24 @@ public class TestGeneratorImpl implements TestGenerator {
         return questSnapshots;
     }
 
+    @Override
+    public Version generate(Version version) {
+        version.setOid(UUID.randomUUID().toString().replaceAll("-", ""));
+        BeanUtils.getBean("testAnswerGenerator", TestGenerator.class).generate(version.getOid() + ".txt", version.getQuestions());
+        BeanUtils.getBean("docxTestGenerator", TestGenerator.class).generate(version.getOid() + ".docx", version.getQuestions());
+        BeanUtils.getBean("pdfTestGenerator", TestGenerator.class).generate(version.getOid() + ".pdf", version.getQuestions());
+        version.setCreator("Default Admin");
+        version.setCreateDatetime(new Date());
+        version.getQuestions().forEach(question -> {
+            question.setVersion(version);
+            question.getAnswers().forEach(answer -> answer.setQuestion(question));
+        });
+        versionRepo.save(version);
+        return version;
+    }
+
+    @Override
+    public QuestionFile download(String versionOid, String contentType) {
+        return null;
+    }
 }

@@ -26,12 +26,16 @@ package com.bxf.hradmin.testgen.model;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import com.bxf.hradmin.common.persistence.IDataObject;
 import com.bxf.hradmin.common.persistence.OidGeneratorListener;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.Data;
 
@@ -52,8 +56,10 @@ public class AnswerSnapshot implements IDataObject {
     private String oid;
 
     /** 問題快照編號 */
-    @Column(name = "question_oid", length = 32, nullable = false)
-    private String questionId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "question_oid", nullable = false)
+    @JsonIgnore
+    private QuestionSnapshot question;
 
     /** 答案快照編號 */
     @Column(name = "answer_no", length = 1, nullable = false)

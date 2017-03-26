@@ -23,17 +23,30 @@
  */
 package com.bxf.hradmin.testgen.service;
 
-import java.util.List;
-
-import com.bxf.hradmin.testgen.model.QuestionSnapshot;
+import com.bxf.hradmin.testgen.dto.GenerateCond;
+import com.bxf.hradmin.testgen.dto.QuestionFile;
+import com.bxf.hradmin.testgen.model.Version;
 
 /**
- * 試卷產生器
+ * 試卷產生服務邏輯
  *
- * @since 2017-02-26
+ * @since 2017-03-18
  * @author Bo-Xuan Fan
  */
-public interface TestGenerator {
+public interface TestGenerationService {
 
-    void generate(String fileName, List<QuestionSnapshot> questions);
+    /**
+     * 試卷預覽
+     */
+    Version preview(GenerateCond cond);
+
+    /**
+     * 產生試卷
+     */
+    Version generate(Version version);
+
+    /**
+     * 下載試卷
+     */
+    QuestionFile download(String versionOid, String contentType);
 }

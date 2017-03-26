@@ -24,11 +24,15 @@
 package com.bxf.hradmin.testgen.model;
 
 import java.util.Date;
+import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import com.bxf.hradmin.common.persistence.IDataObject;
@@ -60,4 +64,13 @@ public class Version implements IDataObject {
     @Column(name = "creator", length = 200, nullable = false)
     private String creator;
 
+    /** 及格分數 */
+    @Column(name = "passing_score", nullable = false)
+    private Integer passingScore;
+
+    /** 問題清單 */
+    @OneToMany(cascade = CascadeType.ALL,
+            fetch = FetchType.EAGER,
+            mappedBy = "version")
+    private List<QuestionSnapshot> questions;
 }

@@ -1,0 +1,14 @@
+com:
+  bxf:
+    hradmin:
+      file:
+        # 檔案存放路徑，預設存放於 tmpdir 下
+        root: ${java.io.tmpdir}/HRAdmin
+      testgen:
+        service:
+          # 英文字體
+          font-ascii-family: Consolas
+          # 中文字體
+          font-eastAsia-family: 微軟正黑體
+          # 字體大小
+          font-size: 12

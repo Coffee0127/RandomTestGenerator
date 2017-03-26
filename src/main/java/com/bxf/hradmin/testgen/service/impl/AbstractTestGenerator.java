@@ -21,19 +21,47 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.bxf.hradmin.testgen.service;
+package com.bxf.hradmin.testgen.service.impl;
 
-import java.util.List;
+import java.io.File;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
-import com.bxf.hradmin.testgen.model.QuestionSnapshot;
+import javax.annotation.PostConstruct;
+
+import org.springframework.beans.factory.annotation.Value;
+
+import com.bxf.hradmin.testgen.service.TestGenerator;
 
 /**
- * 試卷產生器
+ * AbstractTestGenerator
  *
- * @since 2017-02-26
+ * @since 2017-03-25
  * @author Bo-Xuan Fan
  */
-public interface TestGenerator {
+public abstract class AbstractTestGenerator implements TestGenerator {
 
-    void generate(String fileName, List<QuestionSnapshot> questions);
+    /** NEW_LINE */
+    protected static final String NEW_LINE = "\n";
+
+    @Value("${com.bxf.hradmin.file.root}")
+    private String root;
+
+    private File rootPath;
+
+    @PostConstruct
+    private void init() {
+        rootPath = new File(root, "testgen");
+        if (!rootPath.exists()) {
+            rootPath.mkdirs();
+        }
+    }
+
+    protected File getRootPath() {
+        File folder = new File(rootPath, new SimpleDateFormat("yyyy-MM-dd").format(new Date()));
+        if (!folder.exists()) {
+            folder.mkdirs();
+        }
+        return folder;
+    }
 }
