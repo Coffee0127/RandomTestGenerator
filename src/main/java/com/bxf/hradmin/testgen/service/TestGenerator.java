@@ -35,5 +35,5 @@ import com.bxf.hradmin.testgen.model.QuestionSnapshot;
  */
 public interface TestGenerator {
 
-    void generate(String fileName, List<QuestionSnapshot> questions);
+    void generate(String versionOid, List<QuestionSnapshot> questions);
 }

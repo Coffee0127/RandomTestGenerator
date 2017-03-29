@@ -60,6 +60,7 @@ import com.bxf.hradmin.common.exception.ModuleInfo;
 import com.bxf.hradmin.testgen.model.QuestionSnapshot;
 import com.bxf.hradmin.testgen.service.TestGenException;
 import com.bxf.hradmin.testgen.service.TestGenerator;
+import com.bxf.hradmin.utils.ZipUtils;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -83,8 +84,9 @@ public class DocxTestGenerator extends AbstractTestGenerator {
     private String fontEastAsiaFamily;
 
     @Override
-    public void generate(String fileName, List<QuestionSnapshot> questions) {
-        try (BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(new File(getRootPath(), fileName)));
+    public void generate(String versionOid, List<QuestionSnapshot> questions) {
+        File docxFile = new File(getRootPath(versionOid), "T-Java.docx");
+        try (BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(docxFile));
                 InputStream is = TestGenerator.class.getResourceAsStream("/template/questions.docx")) {
 
             XWPFDocument doc = new XWPFDocument(is);
@@ -103,6 +105,11 @@ public class DocxTestGenerator extends AbstractTestGenerator {
             setBorders(table);
             // 產製檔案
             doc.write(bos);
+
+            File[] unzipFiles = { docxFile, new File(getRootPath(versionOid),  "A-Java.txt") };
+
+            File destination = new File(getRootPath(versionOid), "T-Java-docx.zip");
+            ZipUtils.zip(destination, true, null, unzipFiles);
         } catch (IOException e) {
             log.error(e.getMessage(), e);
             throw new TestGenException(e.getMessage(), ModuleInfo.TestGenMgr);

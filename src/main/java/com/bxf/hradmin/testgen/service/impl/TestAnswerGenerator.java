@@ -49,8 +49,9 @@ import lombok.extern.slf4j.Slf4j;
 public class TestAnswerGenerator extends AbstractTestGenerator {
 
     @Override
-    public void generate(String fileName, List<QuestionSnapshot> questions) {
-        try (PrintWriter pw = new PrintWriter(new BufferedOutputStream(new FileOutputStream(new File(getRootPath(), fileName))))) {
+    public void generate(String versionOid, List<QuestionSnapshot> questions) {
+        try (PrintWriter pw = new PrintWriter(new BufferedOutputStream(
+                new FileOutputStream(new File(getRootPath(versionOid), "A-Java.txt"))))) {
             questions.stream()
                 .sorted((o1, o2) -> o1.getQuestionNo().compareTo(o2.getQuestionNo()))
                 .forEach(question -> pw.printf("%s. %s\n", question.getQuestionNo(), question.getCorrectAnswer()));
