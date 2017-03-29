@@ -24,8 +24,6 @@
 package com.bxf.hradmin.testgen.service.impl;
 
 import java.io.File;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 import javax.annotation.PostConstruct;
 
@@ -57,8 +55,8 @@ public abstract class AbstractTestGenerator implements TestGenerator {
         }
     }
 
-    protected File getRootPath() {
-        File folder = new File(rootPath, new SimpleDateFormat("yyyy-MM-dd").format(new Date()));
+    protected File getRootPath(String versionOid) {
+        File folder = new File(rootPath, versionOid);
         if (!folder.exists()) {
             folder.mkdirs();
         }

@@ -220,9 +220,7 @@ public class TestGenerationServiceImpl implements TestGenerationService {
     @Override
     public Version generate(Version version) {
         version.setOid(UUID.randomUUID().toString().replaceAll("-", ""));
-        BeanUtils.getBean("testAnswerGenerator", TestGenerator.class).generate(version.getOid() + ".txt", version.getQuestions());
-        BeanUtils.getBean("docxTestGenerator", TestGenerator.class).generate(version.getOid() + ".docx", version.getQuestions());
-        BeanUtils.getBean("pdfTestGenerator", TestGenerator.class).generate(version.getOid() + ".pdf", version.getQuestions());
+        doGenerate(version.getOid(), version.getQuestions());
         version.setCreator("Default Admin");
         version.setCreateDatetime(new Date());
         version.getQuestions().forEach(question -> {
@@ -231,6 +229,13 @@ public class TestGenerationServiceImpl implements TestGenerationService {
         });
         versionRepo.save(version);
         return version;
+    }
+
+    private void doGenerate(String versionOid, List<QuestionSnapshot> questions) {
+        String[] beanNames = { "testAnswerGenerator", "docxTestGenerator", "pdfTestGenerator" };
+        for (String beanName : beanNames) {
+            BeanUtils.getBean(beanName, TestGenerator.class).generate(versionOid, questions);
+        }
     }
 
     @Override

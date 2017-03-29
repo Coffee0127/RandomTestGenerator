@@ -40,6 +40,7 @@ import org.springframework.stereotype.Service;
 import com.bxf.hradmin.common.exception.ModuleInfo;
 import com.bxf.hradmin.testgen.model.QuestionSnapshot;
 import com.bxf.hradmin.testgen.service.TestGenException;
+import com.bxf.hradmin.utils.ZipUtils;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -54,14 +55,21 @@ import lombok.extern.slf4j.Slf4j;
 public class PdfTestGenerator extends AbstractTestGenerator {
 
     @Override
-    public void generate(String fileName, List<QuestionSnapshot> questions) {
-        try (InputStream source = new FileInputStream(new File(getRootPath(), fileName.replace(".pdf", ".docx")));
-                BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(new File(getRootPath(), fileName)))) {
+    public void generate(String versionOid, List<QuestionSnapshot> questions) {
+        try (InputStream source = new FileInputStream(new File(getRootPath(versionOid), "T-Java.docx"));
+                BufferedOutputStream bos = new BufferedOutputStream(
+                        new FileOutputStream(new File(getRootPath(versionOid), "T-Java.pdf")))) {
 
             IXWPFConverter<PdfOptions> converter = PdfConverter.getInstance();
             XWPFDocument document = new XWPFDocument(source);
             PdfOptions options = PdfOptions.getDefault();
             converter.convert(document, bos, options);
+
+            File[] unzipFiles = { new File(getRootPath(versionOid), "T-Java.pdf"),
+                    new File(getRootPath(versionOid), "A-Java.txt") };
+
+            File destination = new File(getRootPath(versionOid), "T-Java-pdf.zip");
+            ZipUtils.zip(destination, true, null, unzipFiles);
         } catch (IOException e) {
             log.error(e.getMessage(), e);
             throw new TestGenException(e.getMessage(), ModuleInfo.TestGenMgr);
