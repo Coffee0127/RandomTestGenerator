@@ -16,8 +16,16 @@ import org.junit.rules.TemporaryFolder;
 @FixMethodOrder
 public class ZipUtilsTest {
 
+    private static File rootFolder = new File(System.getProperty("java.io.tmpdir"), "HRAdmin/UnitTest");
+
     @ClassRule
-    public static TemporaryFolder folder = new TemporaryFolder(new File(System.getProperty("java.io.tmpdir"), "HRAdmin/UnitTest"));
+    public static TemporaryFolder folder = new TemporaryFolder(rootFolder);
+
+    static {
+        if (!rootFolder.exists()) {
+            rootFolder.mkdirs();
+        }
+    }
 
     @BeforeClass
     public static void setUpBeforeClass() throws Exception {
