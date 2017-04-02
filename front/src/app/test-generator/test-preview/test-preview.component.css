@@ -1,0 +1,22 @@
+.level-checkbox {
+  margin-top: 10px;
+}
+@media (max-width: 768px) {
+  .level-checkbox {
+    margin-top: 4px;
+  }
+}
+
+.level-amount {
+  opacity: 0;
+  transition: opacity 0.5s;
+}
+
+.level-checkbox:focus  {
+  border: 0px solid #FFF;
+  box-shadow: inset 0px 0px 0px 0px #FFF;
+}
+
+.level-checkbox:checked + span.form-control-static .level-amount {
+  opacity: 1;
+}

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<entity-mappings version="2.1"
+    xmlns="http://xmlns.jcp.org/xml/ns/persistence/orm"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="
+        http://xmlns.jcp.org/xml/ns/persistence/orm
+        http://xmlns.jcp.org/xml/ns/persistence/orm_2_1.xsd">
+
+    <named-native-query name="Question.findRandomOids">
+        <query>
+            SELECT OID 
+              FROM (
+                SELECT OID, ROWNUM() AS R 
+                  FROM (
+                    SELECT OID
+                      FROM HRA_QUESTION
+                     WHERE CAT_OID = :catOid
+                       AND (:isSingleAnswer IS NULL OR IS_SINGLE_ANSWER = :isSingleAnswer)
+                       AND LEVEL_ID = :levelId
+                     ORDER BY OID)
+                )
+             WHERE R IN :rowNums
+        </query>
+    </named-native-query>
+
+</entity-mappings>

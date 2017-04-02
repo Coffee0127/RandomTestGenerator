@@ -1,0 +1,44 @@
+spring:
+  profiles:
+    active: dev
+  jpa:
+    hibernate:
+      ddl-auto: update
+      naming:
+        physical-strategy: com.bxf.hradmin.common.persistence.MyNamingStrategy
+  http:
+    encoding:
+      enabled: true
+      charset: UTF-8
+      force: true
+
+server:
+  context-path: /HRAdmin
+
+---
+spring:
+  profiles: dev
+  datasource:
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:mem:hrdb
+    username: sa
+    password: 
+  jpa:
+    orm: META-INF/orm/orm-h2.xml
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.H2Dialect
+
+---
+spring:
+  profiles: prod
+  datasource:
+    driver-class-name: oracle.jdbc.OracleDriver
+    url: jdbc:oracle:thin:@localhost:32769:XE
+    username: SCOTT
+    password: TIGER
+  jpa:
+    orm: META-INF/orm/orm-oracle.xml
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.Oracle10gDialect

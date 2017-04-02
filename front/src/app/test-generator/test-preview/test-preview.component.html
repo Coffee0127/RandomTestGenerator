@@ -1,0 +1,99 @@
+<div class="row">
+  <div class="col-lg-12">
+    <div class="panel panel-default">
+      <div class="panel-heading">產製條件</div>
+      <div class="panel-body">
+        <form role="form" class="form-horizontal" [formGroup]="condForm" novalidate (ngSubmit)="previewTest()">
+          <div class="form-group" [ngClass]="{'has-error': getFieldInvalid('totalQuests')}">
+            <label class="col-sm-2 control-label">題目數量</label>
+            <div class="col-sm-2"><input class="form-control" type="number" min="10" max="25" readonly="true" formControlName="totalQuests" /></div>
+            <div class="form-control-static" *ngIf="getFieldInvalid('totalQuests')">請輸入題目數量</div>
+          </div>
+          <div class="form-group" [ngClass]="{'has-error': getFieldInvalid('totalScore')}">
+            <label class="col-sm-2 control-label">題目總分</label>
+            <div class="col-sm-2"><input class="form-control" type="number" min="100" max="100" readonly="true" formControlName="totalScore" /></div>
+            <div class="form-control-static" *ngIf="getFieldInvalid('totalScore')">請輸入題目總分</div>
+          </div>
+          <div class="form-group">
+            <label class="col-sm-2 control-label">答題類型</label>
+            <div class="col-sm-8">
+              <div class="radio">
+                <label>
+                  <input type="radio" formControlName="answerType" [value]="null">不限制
+                </label>
+              </div>
+              <div class="radio">
+                <label>
+                  <input type="radio" formControlName="answerType" [value]="true">單選題
+                </label>
+              </div>
+              <div class="radio">
+                <label>
+                  <input type="radio" formControlName="answerType" [value]="false">複選題
+                </label>
+              </div>
+            </div>
+          </div>
+          <div class="form-group" [ngClass]="{'has-error': getFieldInvalid('cate_checked')}" *ngIf="condForm.controls['cate_checked']">
+            <label class="col-sm-2 control-label">題目種類</label>
+            <div class="col-sm-8" formArrayName="cate_checked">
+              <div class="checkbox" *ngFor="let cate of condForm.controls['cate_checked'].controls; let i = index">
+                <label>
+                  <input type="checkbox" [formControlName]="i" />
+                  <span class="form-control-static">{{ categories[i].desc }}</span>
+                </label>
+              </div>
+              <div class="form-control-static" *ngIf="getFieldInvalid('cate_checked')">請勾選題目種類</div>
+            </div>
+          </div>
+          <div class="form-group" [ngClass]="{'has-error': getFieldInvalid('questLevelForm')}" *ngIf="condForm.controls['questLevelForm']">
+            <label class="col-sm-2 control-label" style="padding-top: 12px">難度及數量</label>
+            <div class="col-sm-4" formArrayName="questLevelForm">
+              <div class="checkbox" *ngFor="let level of condForm.controls['questLevelForm'].controls; let i = index">
+                <label class="form-inline" [formGroupName]="i">
+                  <input class="level-checkbox" type="checkbox" formControlName="level_checked" />
+                  <span class="form-control-static">
+                    {{ questLevels[i].desc }}
+                    <input class="form-control level-amount" type="number" formControlName="level_number" min="0" max="25" />
+                  </span>
+                </label>
+              </div>
+              <div class="form-control-static" *ngIf="getFieldInvalid('questLevelForm')">請勾選難度及正確數量</div>
+            </div>
+          </div>
+          <div class="form-group">
+            <div class="col-sm-2 control-label">
+              <button type="submit" class="btn btn-primary" [disabled]="condForm.invalid" [ngClass]="{disabled: condForm.invalid}">產生預覽</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <div class="pull-left">試卷預覽</div>
+        <div class="pull-right" *ngIf="version?.questions">
+          <span class="small">建議及格分數：<span style="padding: 0 2px;">{{ version.passingScore }}</span>分</span>
+          <span>
+            <button type="button" class="btn btn-primary" *ngIf="!isDownloadAvailable" [@btnAnimation]="!isDownloadAvailable" (click)="generateTest()"><i class="fa fa-floppy-o" aria-hidden="true"></i> 產製試卷</button>
+            <button type="button" class="btn btn-primary" *ngIf="isDownloadAvailable" [@btnAnimation]="isDownloadAvailable" (click)="download('pdf')"><i class="fa fa-download" aria-hidden="true"></i> pdf</button>
+            <button type="button" class="btn btn-primary" *ngIf="isDownloadAvailable" [@btnAnimation]="isDownloadAvailable" (click)="download('docx')"><i class="fa fa-download" aria-hidden="true"></i> docx</button>
+          </span>
+        </div>
+      </div>
+      <div class="panel-body">
+        <form role="form">
+          <div class="form-group" *ngFor="let question of version?.questions; let i = index; let last = last;">
+            <label><pre>{{ question.questionNo }}. {{ question.desc }}</pre></label>
+            <div class="checkbox" *ngFor="let answer of question.answers">
+              <label>
+                <input type="checkbox" [checked]="answer.correct" onclick="return false;" />{{ answer.answerNo }}. {{ answer.desc }}
+              </label>
+            </div>
+            <hr *ngIf="!last"/>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div><!-- /.col-->
+</div><!-- /.row -->
