@@ -23,6 +23,9 @@
  */
 package com.bxf.hradmin.testgen.service.impl;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -35,12 +38,15 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Service;
 
+import com.bxf.hradmin.common.exception.ModuleInfo;
 import com.bxf.hradmin.testgen.dto.GenerateCond;
 import com.bxf.hradmin.testgen.dto.QuestionFile;
 import com.bxf.hradmin.testgen.model.AnswerSnapshot;
@@ -56,12 +62,15 @@ import com.bxf.hradmin.testgen.service.TestGenerationService;
 import com.bxf.hradmin.testgen.service.TestGenerator;
 import com.bxf.hradmin.utils.BeanUtils;
 
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * TestGenerationServiceImpl
  *
  * @since 2017-03-18
  * @author Bo-Xuan Fan
  */
+@Slf4j
 @Service
 public class TestGenerationServiceImpl implements TestGenerationService {
 
@@ -75,6 +84,9 @@ public class TestGenerationServiceImpl implements TestGenerationService {
 
     @Autowired
     private VersionRepository versionRepo;
+
+    @Value("${com.bxf.hradmin.file.root}")
+    private String root;
 
     @Override
     public Version preview(GenerateCond cond) {
@@ -240,6 +252,32 @@ public class TestGenerationServiceImpl implements TestGenerationService {
 
     @Override
     public QuestionFile download(String versionOid, String contentType) {
-        return null;
+        try {
+            QuestionFile questionFile = new QuestionFile();
+            File folder = new File(new File(root, "testgen"), versionOid);
+            String name;
+            switch (contentType) {
+                case "docx":
+                    name = "T-Java-docx.zip";
+                    break;
+                case "pdf":
+                default:
+                    name = "T-Java-pdf.zip";
+                    break;
+            }
+            questionFile.setName(name);
+            questionFile.setContentType("application/zip");
+            questionFile.setContent(getContent(folder, name));
+            return questionFile;
+        } catch (IOException e) {
+            log.error(e.getMessage(), e);
+            throw new TestGenException(e.getMessage(), ModuleInfo.TestGenMgr);
+        }
+    }
+
+    private byte[] getContent(File folder, String fileName) throws IOException {
+        try (FileInputStream source = new FileInputStream(new File(folder, fileName))) {
+            return IOUtils.toByteArray(source);
+        }
     }
 }

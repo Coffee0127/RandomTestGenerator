@@ -155,4 +155,8 @@ export class TestPreviewComponent implements OnInit {
         showErrorMsg(error._body && error._body || DEFAULT_ERROR_MSG);
       });
   }
+
+  download(type: string) {
+    window.open(`/api/quest/download?versionOid=${this.version.oid}&contentType=${type}`);
+  }
 }

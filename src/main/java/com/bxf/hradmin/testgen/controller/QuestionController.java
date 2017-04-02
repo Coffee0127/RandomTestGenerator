@@ -23,16 +23,23 @@
  */
 package com.bxf.hradmin.testgen.controller;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.bxf.hradmin.testgen.dto.GenerateCond;
+import com.bxf.hradmin.testgen.dto.QuestionFile;
 import com.bxf.hradmin.testgen.model.QuestLevel;
 import com.bxf.hradmin.testgen.model.Version;
 import com.bxf.hradmin.testgen.repository.QuestLevelRepository;
@@ -84,37 +91,19 @@ public class QuestionController {
         } catch (IOException e) {
             throw new TestGenException(e);
         }
-
     }
 
-//    @RequestMapping("/download")
-//    public void download(@RequestBody(required = false) Map<String, Object> parameter, HttpServletResponse response) throws IOException {
-////        response.setContentType("application/pdf");
-//
-////        List<QuestionSnapshot> questions = new ArrayList<>();
-//        ObjectInputStream ois = new ObjectInputStream(new FileInputStream(new File("D:/Temp/question.file")));
-//        List<QuestionSnapshot> questions = null;
-//        try {
-//            questions = (List<QuestionSnapshot>) ois.readObject();
-//        } catch (ClassNotFoundException e) {
-//            // TODO Auto-generated catch block
-//            e.printStackTrace();
-//        }
-//        ois.close();
-//        for (int i = 0; i < questions.size(); i++) {
-//            QuestionSnapshot question = questions.get(i);
-//            question.setQuestionNo(i + 1);
-//            question.setDesc("來點中文" + question.getDesc());
-//        }
-//
-//        String contentType = "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
-//        QuestionFile questionFile = testGenService.download(questions, contentType);
-//        response.setContentType(contentType);
-//        String contentDisposition = new StringBuilder()
-//                .append("attachment; filename=\"").append(questionFile.getName()).append('"').toString();
-//        response.setHeader("Content-Disposition", contentDisposition);
-//        InputStream input = new ByteArrayInputStream(questionFile.getContent());
-//        IOUtils.copy(input, response.getOutputStream());
-//        response.flushBuffer();
-//    }
+    @RequestMapping("/download")
+    public void download(@RequestParam Map<String, Object> parameter, HttpServletResponse response) throws IOException {
+        String versionOid = (String) parameter.get("versionOid");
+        String contentType = (String) parameter.get("contentType");
+        QuestionFile questionFile = testGenService.download(versionOid, contentType);
+        String contentDisposition = new StringBuilder()
+                .append("attachment; filename=\"").append(questionFile.getName()).append('"').toString();
+        response.setHeader("Content-Disposition", contentDisposition);
+        response.setContentType(questionFile.getContentType());
+        InputStream input = new ByteArrayInputStream(questionFile.getContent());
+        IOUtils.copy(input, response.getOutputStream());
+        response.flushBuffer();
+    }
 }
