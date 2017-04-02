@@ -23,12 +23,15 @@
  */
 package com.bxf.hradmin.testgen.dto;
 
+import lombok.Data;
+
 /**
  * QuestionFile
  *
  * @since 2017-03-18
  * @author Bo-Xuan Fan
  */
+@Data
 public class QuestionFile {
 
     /** 檔案名稱 */
@@ -37,19 +40,6 @@ public class QuestionFile {
     /** 檔案內容 */
     private byte[] content;
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public byte[] getContent() {
-        return content;
-    }
-
-    public void setContent(byte[] content) {
-        this.content = content;
-    }
+    /** 檔案類型 */
+    private String contentType;
 }

@@ -76,8 +76,8 @@
           <span class="small">建議及格分數：<span style="padding: 0 2px;">{{ version.passingScore }}</span>分</span>
           <span>
             <button type="button" class="btn btn-primary" *ngIf="!isDownloadAvailable" [@btnAnimation]="!isDownloadAvailable" (click)="generateTest()"><i class="fa fa-floppy-o" aria-hidden="true"></i> 產製試卷</button>
-            <button type="button" class="btn btn-primary" *ngIf="isDownloadAvailable" [@btnAnimation]="isDownloadAvailable"><i class="fa fa-download" aria-hidden="true"></i> pdf</button>
-            <button type="button" class="btn btn-primary" *ngIf="isDownloadAvailable" [@btnAnimation]="isDownloadAvailable"><i class="fa fa-download" aria-hidden="true"></i> docx</button>
+            <button type="button" class="btn btn-primary" *ngIf="isDownloadAvailable" [@btnAnimation]="isDownloadAvailable" (click)="download('pdf')"><i class="fa fa-download" aria-hidden="true"></i> pdf</button>
+            <button type="button" class="btn btn-primary" *ngIf="isDownloadAvailable" [@btnAnimation]="isDownloadAvailable" (click)="download('docx')"><i class="fa fa-download" aria-hidden="true"></i> docx</button>
           </span>
         </div>
       </div>
