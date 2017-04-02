@@ -23,20 +23,30 @@
  */
 package com.bxf.hradmin.testgen.controller;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.bxf.hradmin.testgen.dto.GenerateCond;
+import com.bxf.hradmin.testgen.dto.QuestionFile;
 import com.bxf.hradmin.testgen.model.QuestLevel;
-import com.bxf.hradmin.testgen.model.QuestionSnapshot;
+import com.bxf.hradmin.testgen.model.Version;
 import com.bxf.hradmin.testgen.repository.QuestLevelRepository;
-import com.bxf.hradmin.testgen.service.TestGenerator;
+import com.bxf.hradmin.testgen.service.TestGenException;
+import com.bxf.hradmin.testgen.service.TestGenerationService;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * QuestionController
@@ -52,29 +62,48 @@ public class QuestionController {
     private QuestLevelRepository levelRepo;
 
     @Autowired
-    private TestGenerator generator;
+    private TestGenerationService testGenService;
 
     @RequestMapping("/findQL")
     public List<QuestLevel> findAllLevels() {
         return levelRepo.findAll();
     }
 
-    @SuppressWarnings("unchecked")
+    @RequestMapping("/preview")
+    public Version preview(@RequestBody Map<String, Object> parameter) {
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            GenerateCond cond = mapper.readValue(mapper.writeValueAsString(parameter),
+                    new TypeReference<GenerateCond>() { });
+            return testGenService.preview(cond);
+        } catch (IOException e) {
+            throw new TestGenException(e);
+        }
+    }
+
     @RequestMapping("/generate")
-    public List<QuestionSnapshot> find(@RequestBody(required = false) Map<String, Object> conditions) {
-        GenerateCond cond = new GenerateCond();
-        cond.setTotalQuests((Integer) conditions.get("totalQuests"));
-        cond.setTotalQuests((Integer) conditions.get("totalScore"));
-        cond.setCatIds((List<String>) conditions.get("catIds"));
-        List<QuestLevel> questLevels = ((List<Map<String, Object>>) conditions.get("questLevels"))
-                .stream().map((v) -> {
-                    QuestLevel level = new QuestLevel();
-                    level.setId((Integer) v.get("id"));
-                    level.setNumber((Integer) v.get("number"));
-                    return level;
-                }).collect(Collectors.toList());
-        cond.setQuestLevels(questLevels);
-        cond.setIsSingleAnswer((Boolean) conditions.get("isSingleAnswer"));
-        return generator.generate(cond);
+    public String generate(@RequestBody Map<String, Object> parameter) {
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            Version questions = mapper.readValue(mapper.writeValueAsString(parameter),
+                    new TypeReference<Version>() { });
+            return testGenService.generate(questions).getOid();
+        } catch (IOException e) {
+            throw new TestGenException(e);
+        }
+    }
+
+    @RequestMapping("/download")
+    public void download(@RequestParam Map<String, Object> parameter, HttpServletResponse response) throws IOException {
+        String versionOid = (String) parameter.get("versionOid");
+        String contentType = (String) parameter.get("contentType");
+        QuestionFile questionFile = testGenService.download(versionOid, contentType);
+        String contentDisposition = new StringBuilder()
+                .append("attachment; filename=\"").append(questionFile.getName()).append('"').toString();
+        response.setHeader("Content-Disposition", contentDisposition);
+        response.setContentType(questionFile.getContentType());
+        InputStream input = new ByteArrayInputStream(questionFile.getContent());
+        IOUtils.copy(input, response.getOutputStream());
+        response.flushBuffer();
     }
 }

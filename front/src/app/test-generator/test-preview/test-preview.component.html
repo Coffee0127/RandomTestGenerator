@@ -3,7 +3,7 @@
     <div class="panel panel-default">
       <div class="panel-heading">產製條件</div>
       <div class="panel-body">
-        <form role="form" class="form-horizontal" [formGroup]="condForm" novalidate (ngSubmit)="generateTest()">
+        <form role="form" class="form-horizontal" [formGroup]="condForm" novalidate (ngSubmit)="previewTest()">
           <div class="form-group" [ngClass]="{'has-error': getFieldInvalid('totalQuests')}">
             <label class="col-sm-2 control-label">題目數量</label>
             <div class="col-sm-2"><input class="form-control" type="number" min="10" max="25" readonly="true" formControlName="totalQuests" /></div>
@@ -63,18 +63,28 @@
           </div>
           <div class="form-group">
             <div class="col-sm-2 control-label">
-              <button type="submit" class="btn btn-primary" [disabled]="condForm.invalid">產生試卷</button>
+              <button type="submit" class="btn btn-primary" [disabled]="condForm.invalid" [ngClass]="{disabled: condForm.invalid}">產生預覽</button>
             </div>
           </div>
         </form>
       </div>
     </div>
     <div class="panel panel-default">
-      <div class="panel-heading">試卷預覽</div>
+      <div class="panel-heading">
+        <div class="pull-left">試卷預覽</div>
+        <div class="pull-right" *ngIf="version?.questions">
+          <span class="small">建議及格分數：<span style="padding: 0 2px;">{{ version.passingScore }}</span>分</span>
+          <span>
+            <button type="button" class="btn btn-primary" *ngIf="!isDownloadAvailable" [@btnAnimation]="!isDownloadAvailable" (click)="generateTest()"><i class="fa fa-floppy-o" aria-hidden="true"></i> 產製試卷</button>
+            <button type="button" class="btn btn-primary" *ngIf="isDownloadAvailable" [@btnAnimation]="isDownloadAvailable" (click)="download('pdf')"><i class="fa fa-download" aria-hidden="true"></i> pdf</button>
+            <button type="button" class="btn btn-primary" *ngIf="isDownloadAvailable" [@btnAnimation]="isDownloadAvailable" (click)="download('docx')"><i class="fa fa-download" aria-hidden="true"></i> docx</button>
+          </span>
+        </div>
+      </div>
       <div class="panel-body">
         <form role="form">
-          <div class="form-group" *ngFor="let question of questions; let i = index; let last = last;">
-            <label><pre>{{ i + 1 }}. {{ question.desc }}</pre></label>
+          <div class="form-group" *ngFor="let question of version?.questions; let i = index; let last = last;">
+            <label><pre>{{ question.questionNo }}. {{ question.desc }}</pre></label>
             <div class="checkbox" *ngFor="let answer of question.answers">
               <label>
                 <input type="checkbox" [checked]="answer.correct" onclick="return false;" />{{ answer.answerNo }}. {{ answer.desc }}

@@ -25,16 +25,15 @@ package com.bxf.hradmin.testgen.service;
 
 import java.util.List;
 
-import com.bxf.hradmin.testgen.dto.GenerateCond;
 import com.bxf.hradmin.testgen.model.QuestionSnapshot;
 
 /**
- * 試卷
+ * 試卷產生器
  *
  * @since 2017-02-26
  * @author Bo-Xuan Fan
  */
 public interface TestGenerator {
 
-    List<QuestionSnapshot> generate(GenerateCond cond);
+    void generate(String versionOid, List<QuestionSnapshot> questions);
 }

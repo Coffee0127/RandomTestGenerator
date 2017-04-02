@@ -3,6 +3,10 @@
   cursor: pointer;
   color: rgba(255, 255, 255, .75);
 }
+/* fix the bootstrap .btn.disabled pointer-events: none; */
+.btn.disabled {
+  pointer-events: all !important;
+}
 
 .has-error .form-control-static {
   color: #a94442;

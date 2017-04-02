@@ -42,6 +42,8 @@ import com.bxf.hradmin.common.persistence.BooleanToStringConverter;
 import com.bxf.hradmin.common.persistence.IDataObject;
 import com.bxf.hradmin.common.persistence.OidGeneratorListener;
 
+import lombok.Data;
+
 /**
  * Question
  *
@@ -51,6 +53,7 @@ import com.bxf.hradmin.common.persistence.OidGeneratorListener;
 @Entity
 @Table(name = "question")
 @EntityListeners(OidGeneratorListener.class)
+@Data
 public class Question implements IDataObject {
 
     @Id
@@ -78,56 +81,6 @@ public class Question implements IDataObject {
             fetch = FetchType.EAGER,
             mappedBy = "question")
     private Set<Answer> answers;
-
-    @Override
-    public String getOid() {
-        return oid;
-    }
-
-    @Override
-    public void setOid(String oid) {
-        this.oid = oid;
-    }
-
-    public String getDesc() {
-        return desc;
-    }
-
-    public void setDesc(String desc) {
-        this.desc = desc;
-    }
-
-    public String getCatId() {
-        return catId;
-    }
-
-    public void setCatId(String catId) {
-        this.catId = catId;
-    }
-
-    public Boolean getIsSingleAnswer() {
-        return isSingleAnswer;
-    }
-
-    public void setIsSingleAnswer(Boolean isSingleAnswer) {
-        this.isSingleAnswer = isSingleAnswer;
-    }
-
-    public QuestLevel getQuestLevel() {
-        return questLevel;
-    }
-
-    public void setQuestLevel(QuestLevel questLevel) {
-        this.questLevel = questLevel;
-    }
-
-    public Set<Answer> getAnswers() {
-        return answers;
-    }
-
-    public void setAnswers(Set<Answer> answers) {
-        this.answers = answers;
-    }
 
     public void addAnswer(Answer answer) {
         if (this.answers == null) {
