@@ -29,7 +29,7 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Component;
 
 /**
- * BeanUtils
+ * 封裝 Spring {@link org.springframework.beans.BeanUtils}, 擴充功能
  *
  * @since 2017年3月7日
  * @author Bo-Xuan Fan
