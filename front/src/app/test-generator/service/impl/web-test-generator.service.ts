@@ -1,8 +1,10 @@
 import { Injectable } from '@angular/core';
 import { Http, Headers, RequestOptions, Response } from '@angular/http';
 
+import { TestGeneratorService } from '../test-generator.service';
+
 @Injectable()
-export class TestGeneratorService {
+export class WebTestGeneratorService implements TestGeneratorService {
 
   constructor(private http: Http) { }
 

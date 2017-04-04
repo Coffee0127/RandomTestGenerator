@@ -3,7 +3,8 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { TestGeneratorRoutingModule } from './test-generator-routing.module';
 
-import { TestGeneratorService } from './test-generator.service';
+import { TestGeneratorService } from './service/test-generator.service';
+import { WebTestGeneratorService } from './service/impl/web-test-generator.service';
 
 import { TestPreviewComponent } from './test-preview/test-preview.component';
 
@@ -18,7 +19,7 @@ import { TestPreviewComponent } from './test-preview/test-preview.component';
     TestPreviewComponent
   ],
   providers: [
-    { provide: TestGeneratorService, useClass: TestGeneratorService }
+    { provide: TestGeneratorService, useClass: WebTestGeneratorService }
   ]
 })
 export class TestGeneratorModule { }
