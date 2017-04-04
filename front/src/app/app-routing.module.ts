@@ -1,22 +1,21 @@
 import { NgModule } from '@angular/core';
-import { Routes, RouterModule } from '@angular/router';
+import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
 
 import { IndexComponent } from './index/index.component';
-import { TestPreviewComponent } from './test-generator/test-preview/test-preview.component';
 
 const routes: Routes = [
   { path: '', redirectTo: '/index', pathMatch: 'full' },
   { path: 'index', component: IndexComponent },
   {
-    path: 'testViews',
-    children: [
-      { path: '', component: TestPreviewComponent }
-    ]
+    path: 'TestGenMgr',
+    loadChildren: './test-generator/test-generator.module#TestGeneratorModule'
   }
 ];
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes)],
+  imports: [RouterModule.forRoot(routes, {
+    preloadingStrategy: PreloadAllModules
+  })],
   exports: [RouterModule],
   providers: []
 })
