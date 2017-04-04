@@ -13,8 +13,8 @@ export const showErrorMsg = (msg: string) => {
 }
 
 let extractErrorMsg = (msg) => {
-  let errMsg = 'Error Occurred...';
-  if (msg && isJsonFormat(msg)) {
+  let errMsg = msg || 'Error Occurred...';
+  if (isJsonFormat(msg)) {
     msg = JSON.parse(msg);
     if (msg.error && msg.message) {
       errMsg = `[${msg.error}] ${msg.message}`;
