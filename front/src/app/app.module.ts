@@ -6,15 +6,11 @@ import { AppRoutingModule } from './app-routing.module';
 
 import { AppComponent } from './app.component';
 import { IndexComponent } from './index/index.component';
-import { TestPreviewComponent } from './test-generator/test-preview/test-preview.component';
-
-import { TestGeneratorService } from './test-generator/test-generator.service';
 
 @NgModule({
   declarations: [
     AppComponent,
-    IndexComponent,
-    TestPreviewComponent
+    IndexComponent
   ],
   imports: [
     BrowserModule,
@@ -23,7 +19,7 @@ import { TestGeneratorService } from './test-generator/test-generator.service';
     HttpModule,
     AppRoutingModule
   ],
-  providers: [TestGeneratorService],
+  providers: [],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
