@@ -21,41 +21,36 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.bxf.hradmin.testgen.service;
+package com.bxf.hradmin.common.persistence.query;
 
-import org.springframework.data.domain.Page;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
+import org.springframework.data.jpa.domain.Specification;
 
-import com.bxf.hradmin.testgen.dto.GenerateCond;
-import com.bxf.hradmin.testgen.dto.QuestionFile;
-import com.bxf.hradmin.testgen.dto.QuestionQueryCond;
-import com.bxf.hradmin.testgen.model.Question;
-import com.bxf.hradmin.testgen.model.Version;
+import lombok.Data;
 
 /**
- * 試卷產生服務邏輯
+ * QueryCond
  *
- * @since 2017-03-18
+ * @since 2017-04-09
  * @author Bo-Xuan Fan
  */
-public interface TestGenerationService {
+@Data
+public abstract class QueryCond<T> implements Specification<T> {
 
-    /**
-     * 試卷預覽
-     */
-    Version preview(GenerateCond cond);
+    private int limit = 10;
+    private int activePage;
+    private String sort;
+    private boolean isAsc;
 
-    /**
-     * 產生試卷
-     */
-    Version generate(Version version);
-
-    /**
-     * 下載試卷
-     */
-    QuestionFile download(String versionOid, String contentType);
-
-    /**
-     * 查詢題目
-     */
-    Page<Question> find(QuestionQueryCond cond);
+    public Pageable toPageable() {
+        if (StringUtils.isNotBlank(this.sort)) {
+            Direction direction = this.isAsc ? Direction.ASC : Direction.DESC;
+            return new PageRequest(activePage, limit, new Sort(direction, this.sort));
+        }
+        return new PageRequest(activePage, limit);
+    }
 }

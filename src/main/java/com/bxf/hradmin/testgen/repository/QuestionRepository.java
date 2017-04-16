@@ -26,9 +26,10 @@ package com.bxf.hradmin.testgen.repository;
 import java.util.Collection;
 import java.util.List;
 
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.query.Param;
 
+import com.bxf.hradmin.common.persistence.query.JpaQueryCondRepository;
+import com.bxf.hradmin.testgen.dto.QuestionQueryCond;
 import com.bxf.hradmin.testgen.model.Question;
 
 /**
@@ -37,7 +38,7 @@ import com.bxf.hradmin.testgen.model.Question;
  * @since 2017-02-25
  * @author Bo-Xuan Fan
  */
-public interface QuestionRepository extends JpaRepository<Question, String> {
+public interface QuestionRepository extends JpaQueryCondRepository<Question, String, QuestionQueryCond> {
 
     List<Question> findByOidIn(List<String> oids);
 
