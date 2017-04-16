@@ -41,7 +41,7 @@ import org.springframework.data.repository.NoRepositoryBean;
 public interface JpaQueryCondRepository<T, S extends Serializable, Q extends QueryCond<T>>
     extends JpaRepository<T, S>, JpaSpecificationExecutor<T> {
 
-    default Page<T> find(Q queryCond) {
+    default Page<T> findAll(Q queryCond) {
         return this.findAll(queryCond, queryCond.toPageable());
     }
 }

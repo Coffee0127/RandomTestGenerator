@@ -285,6 +285,6 @@ public class TestGenerationServiceImpl implements TestGenerationService {
 
     @Override
     public Page<Question> find(QuestionQueryCond cond) {
-        return questRepo.find(cond);
+        return questRepo.findAll(cond);
     }
 }
