@@ -21,41 +21,70 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.bxf.hradmin.testgen.service;
-
-import org.springframework.data.domain.Page;
-
-import com.bxf.hradmin.testgen.dto.GenerateCond;
-import com.bxf.hradmin.testgen.dto.QuestionFile;
-import com.bxf.hradmin.testgen.dto.QuestionQueryCond;
-import com.bxf.hradmin.testgen.model.Question;
-import com.bxf.hradmin.testgen.model.Version;
+package com.bxf.hradmin.common.persistence.query;
 
 /**
- * 試卷產生服務邏輯
+ * QueryMode
  *
- * @since 2017-03-18
+ * @since 2017-04-15
  * @author Bo-Xuan Fan
  */
-public interface TestGenerationService {
+public enum QueryMode {
 
-    /**
-     * 試卷預覽
-     */
-    Version preview(GenerateCond cond);
+    /** in */
+    IN("in"),
+    /** not in */
+    NOT_IN("notIn"),
+    /** = */
+    EQUALS("eq"),
+    /** != */
+    NOT_EQUALS("ne"),
+    /** like */
+    LIKE("like"),
+    /** not like */
+    NOT_LIKE("notLike"),
+    /** > */
+    GREATER_THAN("gt"),
+    /** >= */
+    GREATER_EQUALS("ge"),
+    /** < */
+    LESS_THAN("lt"),
+    /** <= */
+    LESS_EQUALS("le"),
+    /** is null */
+    IS_NULL("isNull"),
+    /** is null */
+    IS_NOT_NULL("isNotNull"),
+    /** between and */
+    BETWEEN("between"),
+    /** or */
+    OR("or"),
+    /** and */
+    AND("and");
 
-    /**
-     * 產生試卷
-     */
-    Version generate(Version version);
+    private String code;
 
-    /**
-     * 下載試卷
-     */
-    QuestionFile download(String versionOid, String contentType);
+    QueryMode(String code) {
+        this.code = code;
+    }
 
-    /**
-     * 查詢題目
-     */
-    Page<Question> find(QuestionQueryCond cond);
+    public String getCode() {
+        return code;
+    }
+
+    public static final QueryMode convert(String code) {
+        for (QueryMode searchMode : QueryMode.values()) {
+            if (searchMode.getCode().equals(code)) {
+                return searchMode;
+            }
+        }
+        // default
+        return EQUALS;
+    }
+
+    @Override
+    public String toString() {
+        return code;
+    }
+
 }
