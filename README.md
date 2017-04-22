@@ -5,6 +5,7 @@
 
 ### The Back End
 * You'll need Maven 3+ and Java 8
+    + The plugin `com.github.eirslett:frontend-maven-plugin:1.3` requires Maven version 3.1.0+
 
 ## Run
 ### The Fron End
