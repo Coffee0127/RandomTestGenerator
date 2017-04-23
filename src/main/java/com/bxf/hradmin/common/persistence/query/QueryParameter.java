@@ -21,41 +21,32 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.bxf.hradmin.testgen.service;
+package com.bxf.hradmin.common.persistence.query;
 
-import org.springframework.data.domain.Page;
-
-import com.bxf.hradmin.testgen.dto.GenerateCond;
-import com.bxf.hradmin.testgen.dto.QuestionFile;
-import com.bxf.hradmin.testgen.dto.QuestionQueryCond;
-import com.bxf.hradmin.testgen.model.Question;
-import com.bxf.hradmin.testgen.model.Version;
+import lombok.Getter;
 
 /**
- * 試卷產生服務邏輯
+ * QueryParameter
  *
- * @since 2017-03-18
+ * @since 2017-04-15
  * @author Bo-Xuan Fan
  */
-public interface TestGenerationService {
+@Getter
+public class QueryParameter {
 
-    /**
-     * 試卷預覽
-     */
-    Version preview(GenerateCond cond);
+    private QueryMode mode;
+    private String key;
+    private Object value;
 
-    /**
-     * 產生試卷
-     */
-    Version generate(Version version);
+    public QueryParameter(QueryMode mode, String key, Object value) {
+        super();
+        this.mode = mode;
+        this.key = key;
+        this.value = value;
+    }
 
-    /**
-     * 下載試卷
-     */
-    QuestionFile download(String versionOid, String contentType);
-
-    /**
-     * 查詢題目
-     */
-    Page<Question> find(QuestionQueryCond cond);
+    @Override
+    public String toString() {
+        return new StringBuilder().append(key).append(" ").append(mode).append(" ").append(value).toString();
+    }
 }

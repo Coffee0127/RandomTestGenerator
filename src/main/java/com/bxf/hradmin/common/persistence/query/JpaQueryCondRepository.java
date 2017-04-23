@@ -21,41 +21,27 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.bxf.hradmin.testgen.service;
+package com.bxf.hradmin.common.persistence.query;
+
+import java.io.Serializable;
 
 import org.springframework.data.domain.Page;
-
-import com.bxf.hradmin.testgen.dto.GenerateCond;
-import com.bxf.hradmin.testgen.dto.QuestionFile;
-import com.bxf.hradmin.testgen.dto.QuestionQueryCond;
-import com.bxf.hradmin.testgen.model.Question;
-import com.bxf.hradmin.testgen.model.Version;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.repository.NoRepositoryBean;
 
 /**
- * 試卷產生服務邏輯
+ * 繼承 {@linkplain org.springframework.data.jpa.repository.JpaRepository JpaRepository} 及 {@linkplain org.springframework.data.jpa.repository.JpaSpecificationExecutor JpaSpecificationExecutor},
+ * 並加入 {@linkplain com.bxf.hradmin.common.persistence.query.QueryCond QueryCond} 查詢
  *
- * @since 2017-03-18
+ * @since 2017-04-15
  * @author Bo-Xuan Fan
  */
-public interface TestGenerationService {
+@NoRepositoryBean
+public interface JpaQueryCondRepository<T, S extends Serializable, Q extends QueryCond<T>>
+    extends JpaRepository<T, S>, JpaSpecificationExecutor<T> {
 
-    /**
-     * 試卷預覽
-     */
-    Version preview(GenerateCond cond);
-
-    /**
-     * 產生試卷
-     */
-    Version generate(Version version);
-
-    /**
-     * 下載試卷
-     */
-    QuestionFile download(String versionOid, String contentType);
-
-    /**
-     * 查詢題目
-     */
-    Page<Question> find(QuestionQueryCond cond);
+    default Page<T> find(Q queryCond) {
+        return this.findAll(queryCond, queryCond.toPageable());
+    }
 }

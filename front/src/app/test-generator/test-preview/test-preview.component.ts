@@ -6,12 +6,12 @@ import { Observable } from 'rxjs/Observable';
 
 import { showErrorMsg } from './../../shared/showMsg';
 import { DEFAULT_ERROR_MSG } from './../../shared/constant';
-import { Category } from './../../model/testgen/category.model';
-import { Question } from './../../model/testgen/question.model';
-import { QuestLevel } from './../../model/testgen/quest-level.model';
-import { Version } from './../../model/testgen/version.model';
+import { Category } from '../model/category.model';
+import { Question } from '../model/question.model';
+import { QuestLevel } from '../model/quest-level.model';
+import { Version } from '../model/version.model';
 
-import { TestGeneratorService } from './../test-generator.service';
+import { TestGeneratorService } from '../service/test-generator.service';
 
 @Component({
   selector: 'app-test-preview',

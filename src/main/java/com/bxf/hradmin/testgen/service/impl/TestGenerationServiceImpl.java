@@ -44,11 +44,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Example;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
 import com.bxf.hradmin.common.exception.ModuleInfo;
 import com.bxf.hradmin.testgen.dto.GenerateCond;
 import com.bxf.hradmin.testgen.dto.QuestionFile;
+import com.bxf.hradmin.testgen.dto.QuestionQueryCond;
 import com.bxf.hradmin.testgen.model.AnswerSnapshot;
 import com.bxf.hradmin.testgen.model.QuestLevel;
 import com.bxf.hradmin.testgen.model.Question;
@@ -279,5 +281,10 @@ public class TestGenerationServiceImpl implements TestGenerationService {
         try (FileInputStream source = new FileInputStream(new File(folder, fileName))) {
             return IOUtils.toByteArray(source);
         }
+    }
+
+    @Override
+    public Page<Question> find(QuestionQueryCond cond) {
+        return questRepo.find(cond);
     }
 }
