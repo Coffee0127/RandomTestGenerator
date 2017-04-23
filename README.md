@@ -17,6 +17,7 @@
 ## Packaging
 * **install Node packages** first!!
 * change the pom.xml `frontend-maven-plugin installDirectory` to the NodeJS **parent** directory
+* set up `base href` via maven property `app.context.name`
 ```xml
 <plugin>
     <groupId>com.github.eirslett</groupId>
@@ -33,7 +34,7 @@
                 <!-- plugin would execute C:/iCoding/node/nodejs -->
                 <installDirectory>C:/iCoding</installDirectory>
                 <workingDirectory>front/</workingDirectory>
-                <arguments>run ng build --prod</arguments>
+                <arguments>run ng build -- --prod --base-href /${app.context.name}/</arguments>
             </configuration>
         </execution>
     </executions>
