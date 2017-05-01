@@ -32,6 +32,7 @@ import com.bxf.hradmin.common.persistence.query.QueryCond;
 import com.bxf.hradmin.common.persistence.query.QueryMode;
 import com.bxf.hradmin.common.persistence.query.QueryParameter;
 import com.bxf.hradmin.common.persistence.query.utils.QueryParameterTransformer;
+import com.bxf.hradmin.testgen.model.QuestLevel;
 import com.bxf.hradmin.testgen.model.Question;
 
 import lombok.Data;
@@ -61,7 +62,12 @@ public class QuestionQueryCond extends QueryCond<Question> {
         QueryParameter[] queryParameters = new QueryParameter[3];
         queryParameters[0] = new QueryParameter(QueryMode.EQUALS, "catId", this.catId);
         queryParameters[1] = new QueryParameter(QueryMode.EQUALS, "isSingleAnswer", this.isSingleAnswer);
-        queryParameters[2] = new QueryParameter(QueryMode.EQUALS, "levelId", this.levelId);
+        QuestLevel level = null;
+        if (this.levelId != null) {
+            level = new QuestLevel();
+            level.setId(this.levelId);
+        }
+        queryParameters[2] = new QueryParameter(QueryMode.EQUALS, "questLevel", level);
         return QueryParameterTransformer.generatePredicate(root, builder, queryParameters);
     }
 

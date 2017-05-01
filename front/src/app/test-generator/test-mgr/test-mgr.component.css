@@ -1,0 +1,49 @@
+.bx-pre-question {
+  white-space: pre-wrap;
+}
+
+.bx-pagination-page-size-title {
+  padding-top: 7px;
+  margin-bottom: 0;
+  float: left;
+}
+
+.bx-pagination-page-size {
+  float: left;
+  width: 55px;
+  margin: 0 7px;
+  padding: 0 0 0 5px;
+}
+
+.bx-pagination-input {
+  display: inline-block;
+  width: 40px;
+  height: auto;
+  line-height: normal;
+  padding: 0 0 0 5px;
+}
+
+.bx-pagination > li > a, .bx-pagination > li > span {
+  -webkit-user-select: none;  /* Chrome all / Safari all */
+  -moz-user-select: none;     /* Firefox all */
+  -ms-user-select: none;      /* IE 10+ */
+  user-select: none;          /* Likely future */
+}
+
+.bx-pagination > li.disabled > a, .bx-pagination > li.disabled > span {
+  background-color: #f9f9f9;
+  color: #ccc;
+}
+
+.bx-pagination > li:not(.disabled) > a:hover {
+  cursor: pointer;
+}
+
+.bx-pagination > li > span {
+  color: #363636;
+}
+
+.bx-pagination > li:not(.disabled) > span:hover, .bx-pagination > li:not(.disabled) > span:focus {
+  color: #363636;
+  background-color: #fff;
+}

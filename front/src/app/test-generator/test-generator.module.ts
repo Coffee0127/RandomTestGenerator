@@ -5,8 +5,10 @@ import { TestGeneratorRoutingModule } from './test-generator-routing.module';
 
 import { TestGeneratorService } from './service/test-generator.service';
 import { WebTestGeneratorService } from './service/impl/web-test-generator.service';
+import { LocalTestGeneratorService } from './service/impl/local-test-generator.service';
 
 import { TestPreviewComponent } from './test-preview/test-preview.component';
+import { TestMgrComponent } from './test-mgr/test-mgr.component';
 
 @NgModule({
   imports: [
@@ -16,7 +18,8 @@ import { TestPreviewComponent } from './test-preview/test-preview.component';
     TestGeneratorRoutingModule
   ],
   declarations: [
-    TestPreviewComponent
+    TestPreviewComponent,
+    TestMgrComponent
   ],
   providers: [
     { provide: TestGeneratorService, useClass: WebTestGeneratorService }

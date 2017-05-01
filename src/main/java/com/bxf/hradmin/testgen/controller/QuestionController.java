@@ -33,6 +33,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -40,7 +41,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.bxf.hradmin.testgen.dto.GenerateCond;
 import com.bxf.hradmin.testgen.dto.QuestionFile;
+import com.bxf.hradmin.testgen.dto.QuestionQueryCond;
 import com.bxf.hradmin.testgen.model.QuestLevel;
+import com.bxf.hradmin.testgen.model.Question;
 import com.bxf.hradmin.testgen.model.Version;
 import com.bxf.hradmin.testgen.repository.QuestLevelRepository;
 import com.bxf.hradmin.testgen.service.TestGenException;
@@ -105,5 +108,17 @@ public class QuestionController {
         InputStream input = new ByteArrayInputStream(questionFile.getContent());
         IOUtils.copy(input, response.getOutputStream());
         response.flushBuffer();
+    }
+
+    @RequestMapping("/find")
+    public Page<Question> find(@RequestParam Map<String, Object> parameter) {
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            QuestionQueryCond cond = mapper.readValue(mapper.writeValueAsString(parameter),
+                    new TypeReference<QuestionQueryCond>() { });
+            return testGenService.find(cond);
+        } catch (IOException e) {
+            throw new TestGenException(e);
+        }
     }
 }
