@@ -77,16 +77,15 @@ export class TestMgrComponent implements OnInit {
       });
   }
 
-  keyinActivePage(value, event: KeyboardEvent) {
-    if (event.keyCode == 13) {
-      this.activePage = value - 1;
+  keyinActivePage(value: number, activePageInput: HTMLInputElement) {
+    let localActivePage = value - 1;
+    if (this.isOverFirstPage(localActivePage) || this.isOverLastPage(localActivePage)) {
+      activePageInput.value = '' + (this.dataPage.number + 1);
+      activePageInput.blur();
+      showErrorMsg(`Page ${value} is not an available page.`);
       return;
     }
-
-    if (!event.key.match(/\d/)) {
-      (<HTMLInputElement> event.target).value = value.slice(0, -1);
-      return;
-    }
+    this.activePage = localActivePage;
   }
 
   private isOverFirstPage(value: number) {
@@ -107,7 +106,9 @@ export class TestMgrComponent implements OnInit {
       return;
     }
     this._pageSize = value;
-    this.executeFind();
+    // 回到第 1 頁
+    this._activePage = -1;
+    this.activePage = 0;
 	}
 
 	public get activePage(): number  {

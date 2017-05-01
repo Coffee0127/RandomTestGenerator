@@ -79,7 +79,7 @@
               <ul class="bx-pagination pagination">
                 <li [ngClass]="{disabled: !isPaginable() || dataPage.number == 0}"><a (click)="activePage = 0">&laquo;</a></li>
                 <li [ngClass]="{disabled: !isPaginable() || dataPage.number - 1 < 0}"><a (click)="activePage = !isPaginable() ? 0 : dataPage.number - 1">&lsaquo;</a></li>
-                <li [ngClass]="{disabled: !isPaginable()}"><span><input #activePageInput class="bx-pagination-input form-control" [value]="dataPage == null || dataPage.totalElements == 0 ? 0 : dataPage.number + 1" (keyup)="keyinActivePage(activePageInput.value, $event)" [disabled]="!isPaginable()" onClick="this.setSelectionRange(0, this.value.length)" /> / {{ dataPage == null || dataPage.totalElements == 0 ? 0 : dataPage.totalPages }}</span></li>
+                <li [ngClass]="{disabled: !isPaginable()}"><span><input #activePageInput class="bx-pagination-input form-control" [value]="dataPage == null || dataPage.totalElements == 0 ? 0 : dataPage.number + 1" (keyup.enter)="keyinActivePage(activePageInput.value, activePageInput)" [disabled]="!isPaginable()" onClick="this.setSelectionRange(0, this.value.length)" onkeypress="return event.charCode >= 48 && event.charCode <= 57" /> / {{ dataPage == null || dataPage.totalElements == 0 ? 0 : dataPage.totalPages }}</span></li>
                 <li [ngClass]="{disabled: !isPaginable() || dataPage.number + 1 >= dataPage.totalPages}"><a (click)="activePage = !isPaginable() ? 0 : dataPage.number + 1">&rsaquo;</a></li>
                 <li [ngClass]="{disabled: !isPaginable() || dataPage.number == dataPage.totalPages - 1}"><a (click)="activePage = !isPaginable() ? 0 : dataPage.totalPages - 1">&raquo;</a></li>
               </ul>
