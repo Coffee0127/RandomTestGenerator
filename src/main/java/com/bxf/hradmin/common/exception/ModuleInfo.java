@@ -38,7 +38,7 @@ public enum ModuleInfo {
     /** enum value */
     private String value;
 
-    private ModuleInfo(final String value) {
+    ModuleInfo(final String value) {
         this.value = value;
     }
 

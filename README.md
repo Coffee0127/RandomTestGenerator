@@ -1,4 +1,7 @@
 # RandomTestGenerator
+
+[![Build Status](https://travis-ci.org/Coffee0127/RandomTestGenerator.svg?branch=master)](https://travis-ci.org/Coffee0127/RandomTestGenerator)
+
 ## Installation
 ### The Front End
 * `npm install` to install Node packages (or `yarn`)

@@ -33,6 +33,6 @@ import com.bxf.hradmin.testgen.model.QuestionSnapshot;
  * @since 2017-02-25
  * @author Bo-Xuan Fan
  */
-public interface QuestionSnapshotRepository extends JpaRepository<QuestionSnapshot, String>{
+public interface QuestionSnapshotRepository extends JpaRepository<QuestionSnapshot, String> {
 
 }

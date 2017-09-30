@@ -1,6 +1,13 @@
 import { Injectable } from '@angular/core';
 import { Http, Headers, RequestOptions, Response } from '@angular/http';
 
+import { Observable } from 'rxjs/Rx';
+
+import { serializeObject } from '../../../shared/utils';
+
+import { DataPage } from '../../../shared/model/data-page.model';
+import { QuestionQueryCond } from '../../model/question-query-cond.model';
+import { Question } from '../../model/question.model';
 import { TestGeneratorService } from '../test-generator.service';
 
 @Injectable()
@@ -38,5 +45,11 @@ export class WebTestGeneratorService implements TestGeneratorService {
     let options = new RequestOptions({ headers: headers });
     return this.http.post('/api/quest/generate', body, options)
       .map((response: Response) => response.text());
+  }
+
+  findQuestions(cond: QuestionQueryCond): Observable<DataPage<Question>> {
+    let url = `/api/quest/find?${serializeObject(cond)}`;
+    return this.http.get(url)
+      .map((response: Response) => response.json());
   }
 }

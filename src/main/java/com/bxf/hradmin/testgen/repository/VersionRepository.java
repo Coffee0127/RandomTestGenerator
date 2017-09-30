@@ -33,6 +33,6 @@ import com.bxf.hradmin.testgen.model.Version;
  * @since 2017-02-25
  * @author Bo-Xuan Fan
  */
-public interface VersionRepository extends JpaRepository<Version, String>{
+public interface VersionRepository extends JpaRepository<Version, String> {
 
 }
